@@ -3,7 +3,7 @@
  *
  * @dependencies []
  * @version 1.0.0
- * @src https://github.com/downloads/wycats/handlebars.js/handlebars-1.0.0.beta.6.js
+ * @src http://cloud.github.com/downloads/wycats/handlebars.js/handlebars-1.0.rc.1.js
  */
 
 define('#{{id}}', [], function() {
