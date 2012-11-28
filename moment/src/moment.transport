@@ -1,0 +1,4 @@
+define(function(require, exports, module) {
+  var ender = 1;
+  // @include https://raw.github.com/timrwood/moment/{{version}}/moment.js
+});
