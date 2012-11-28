@@ -1,6 +1,7 @@
 {
     "name": "underscore",
     "root": "gallery",
+    "type": "js",
     "description": "JavaScript's functional programming helper library.",
     "homepage": "http://underscorejs.org",
     "keywords": ["util", "functional", "server", "client", "browser"],
@@ -12,6 +13,6 @@
     "main": "underscore.js",
     "version": "1.4.2",
     "output": {
-      "underscore.js": "underscore.transport"
+      "underscore.js": "default"
     }
 }
