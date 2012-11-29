@@ -12,13 +12,13 @@
   "main": "./lib/coffee-script/coffee-script",
   "homepage": "http://coffeescript.org",
   "bugs": {
-    "url": "https://github.com/jashkenas/coffee-script/issues",
+    "url": "https://github.com/jashkenas/coffee-script/issues"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/jashkenas/coffee-script.git"
   },
   "output": {
-    "coffee-script.js": "coffee-script.transport"
+    "coffee-script.js": "."
   }
 }
