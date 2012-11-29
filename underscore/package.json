@@ -12,6 +12,6 @@
     "main": "underscore.js",
     "version": "1.4.2",
     "output": {
-      "underscore.js": "default"
+      "underscore.js": "."
     }
 }

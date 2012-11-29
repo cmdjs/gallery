@@ -19,6 +19,6 @@
     }
   ],
   "output": {
-    "async.js": "default"
+    "async.js": "."
   }
 }
