@@ -1,0 +1,18 @@
+{
+  "root": "gallery",
+  "name": "handlebars",
+  "description": "Extension of the Mustache logicless template language",
+  "version": "1.0.0",
+  "homepage": "http://www.handlebarsjs.com/",
+  "keywords": [
+    "handlebars mustache template html"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wycats/handlebars.js.git"
+  },
+  "main": "lib/handlebars.js",
+  "output": {
+    "handlbars.js": "."
+  }
+}
