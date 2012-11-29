@@ -33,6 +33,6 @@
     }
   ],
   "output": {
-    "moment.js": "moment.transport"
+    "moment.js": "."
   }
 }
