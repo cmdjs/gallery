@@ -1,7 +1,6 @@
 {
   "name": "backbone",
   "root": "gallery",
-  "type": "js",
   "description": "Give your JS App some Backbone with Models, Views, Collections, and Events.",
   "url": "http://backbonejs.org",
   "keywords": ["model", "view", "controller", "router", "server", "client", "browser"],

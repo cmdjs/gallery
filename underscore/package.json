@@ -1,7 +1,6 @@
 {
     "name": "underscore",
     "root": "gallery",
-    "type": "js",
     "description": "JavaScript's functional programming helper library.",
     "homepage": "http://underscorejs.org",
     "keywords": ["util", "functional", "server", "client", "browser"],
