@@ -1,0 +1,5 @@
+define(function(require, exports, module) {
+
+ // @include https://github.com/LearnBoost/socket.io-client/raw/{{version}}/dist/socket.io.js
+
+});

@@ -1,0 +1,26 @@
+{
+    "name": "socket.io-client"
+  , "description": "Socket.IO client for the browser and node.js"
+  , "version": "0.9.11"
+  , "main" : "./lib/io.js"
+  , "browserify": "./dist/socket.io.js"
+  , "homepage": "http://socket.io"
+  , "keywords": ["websocket", "socket", "realtime", "socket.io", "comet", "ajax"]
+  , "author": "Guillermo Rauch <guillermo@learnboost.com>"
+  , "contributors": [
+        { "name": "Guillermo Rauch", "email": "rauchg@gmail.com" }
+      , { "name": "Arnout Kazemier", "email": "info@3rd-eden.com" }
+      , { "name": "Vladimir Dronnikov", "email": "dronnikov@gmail.com" }
+      , { "name": "Einar Otto Stangvik", "email": "einaros@gmail.com" }
+    ]
+  , "repository": {
+        "type": "git"
+      , "url": "https://github.com/LearnBoost/socket.io-client.git"
+    }
+  , "output": {
+    "socketio.js": ".",
+    "WebSocketMain.swf": "https://github.com/LearnBoost/socket.io-client/raw/{{version}}/dist/WebSocketMain.swf",
+    "WebSocketMainInsecure.swf": "https://github.com/LearnBoost/socket.io-client/raw/{{version}}/dist/WebSocketMainInsecure.swf"
+  }
+
+}
