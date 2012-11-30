@@ -1,0 +1,5 @@
+
+define(function(require, exports, module) {
+  // @include https://github.com/swfobject/swfobject/raw/master/swfobject/src/swfobject.js
+  return swfobject;
+});
