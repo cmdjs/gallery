@@ -1,6 +1,8 @@
 {
     "name": "underscore",
     "root": "gallery",
+    "version": "1.4.2",
+    "package": "https://raw.github.com/documentcloud/underscore/master/package.json",
     "description": "JavaScript's functional programming helper library.",
     "homepage": "http://underscorejs.org",
     "keywords": ["util", "functional", "server", "client", "browser"],
@@ -10,7 +12,6 @@
         "url": "https://github.com/documentcloud/underscore.git"
     },
     "main": "underscore.js",
-    "version": "1.4.2",
     "output": {
       "underscore.js": "."
     }

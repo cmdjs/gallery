@@ -3,6 +3,7 @@
   "root": "gallery",
   "description": "JavaScript library for DOM operations",
   "version": "1.8.2",
+  "package": "https://raw.github.com/jquery/jquery/master/package.json",
   "homepage": "http://jquery.com",
   "author": {
     "name": "jQuery Foundation and other contributors",

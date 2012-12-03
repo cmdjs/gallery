@@ -1,8 +1,9 @@
 {
   "name": "socketio",
   "root": "gallery",
-  "description": "Socket.IO client for the browser and node.js",
   "version": "0.9.11",
+  "package": "https://raw.github.com/LearnBoost/socket.io-client/master/package.json",
+  "description": "Socket.IO client for the browser and node.js",
   "main": "./lib/io.js",
   "browserify": "./dist/socket.io.js",
   "homepage": "http://socket.io",

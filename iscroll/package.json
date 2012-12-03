@@ -1,6 +1,8 @@
 {
     "name": "iscroll",
     "root": "gallery",
+    "version": "4.2.5",
+    "package": "https://raw.github.com/cubiq/iscroll/master/package.json",
     "description": "smooth scrolling for mobile webkit",
     "homepage": "http://cubiq.org/iscroll-4",
     "author": "Matteo Spinelli <matteo@cubiq.org> (http://cubiq.org)",
@@ -10,7 +12,6 @@
       "url": "https://github.com/cubiq/iscroll.git"
     },
     "main": "iscroll.js",
-    "version": "4.2.5",
     "output": {
       "iscroll.js": ".",
       "iscroll-lite.js": "."

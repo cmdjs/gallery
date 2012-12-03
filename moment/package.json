@@ -2,6 +2,7 @@
   "name": "moment",
   "root": "gallery",
   "version": "1.7.2",
+  "package": "https://raw.github.com/timrwood/moment/master/package.json",
   "description": "Parse, manipulate, and display dates.",
   "homepage": "http://momentjs.com",
   "author": "Tim Wood <washwithcare@gmail.com> (http://timwoodcreates.com/)",
