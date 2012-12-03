@@ -1,0 +1,5 @@
+define(function(require, exports, module) {
+
+ // @include https://raw.github.com/marcuswestin/store.js/v{{version}}/store.js
+
+});
