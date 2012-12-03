@@ -1,6 +1,6 @@
 var url = require('url')
 var modules = [
-  'async', 'backbone', 'coffee', 'expect', 'handlebars', 'iscroll',
+  'async', 'backbone', 'coffee', 'es5-safe', 'expect', 'handlebars', 'iscroll',
   'jquery', 'json', 'labjs', 'less', 'marked', 'moment', 'mustache',
   'socketio', 'store', 'swfobject', 'underscore'
 ]

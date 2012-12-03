@@ -1,0 +1,13 @@
+{
+  "name": "es5-safe",
+  "root": "gallery",
+  "version": "0.9.2",
+  "package": "https://raw.github.com/lifesinger/dew/master/lib/es5-safe/package.json",
+  "description": "Provides compatibility shims so that legacy JavaScript engines behave as closely as possible to ES5.",
+  "homepage": "https://github.com/lifesinger/dew/es5-safe",
+  "keywords": ["util"],
+  "author": "Frank Wang <lifesinger@gmail.com>",
+  "output": {
+    "es5-safe.js": "."
+  }
+}
