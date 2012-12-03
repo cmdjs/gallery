@@ -1,4 +1,4 @@
-define("socket.io-client/0.9.11/socketio-debug", [], function(require, exports, module) {
+define("gallery/socketio/0.9.11/socketio-debug", [], function(require, exports, module) {
 
  /*! Socket.IO.js build:0.9.11, development. Copyright(c) 2011 LearnBoost <dev@learnboost.com> MIT Licensed */
 
