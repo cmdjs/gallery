@@ -9,10 +9,12 @@ modules.forEach(function(m) {
   var module = require('./' + m + '/package.json')
   if (module.package) {
     getJSON(module.package, function(data) {
-      console.info('\n' + module.name + ' ' + module.version)
       var package = JSON.parse(data)
+      console.log('')
       if (package.version !== module.version) {
-        console.warn('new version: ' + package.version)
+        console.info(module.name + ' ' + module.version + ' (latest ' + package.version + ')')
+      } else {
+        console.info(module.name + ' ' + module.version)
       }
     })
   } else {
