@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
     <title>Transport</title>
     <link href="http://aralejs.org/static/css/mocha.css?v=e5358" type="text/css" rel="stylesheet" charset="utf-8">
-    <script src="https://a.alipayobjects.com/static/arale/seajs/1.2.1/sea.js"></script>
-    <script src="http://aralejs.org/static/js/arale-helper.js?v=6b3b5"></script>
+    <script src="https://a.alipayobjects.com/seajs/1.2.1/sea.js"></script>
+    <script type="text/javascript">
+      seajs.config({
+        alias: {
+          '$': 'gallery/jquery/1.7.2/jquery.js',
+          '$-debug': 'gallery/jquery/1.7.2/jquery-debug.js'
+        }
+      });
+    </script>
     <script src="http://aralejs.org/static/js/es5-safe.js?v=16605"></script>
     <script src="http://aralejs.org/static/js/mocha.js?v=6a971"></script>
     <script src="http://aralejs.org/static/js/expect.js?v=6a971"></script>
@@ -18,7 +25,7 @@
         mocha.setup('bdd');
 
         var modules = [
-          'async', 'coffee', 'iscroll', 'jquery', 'less',
+          'async', 'backbone', 'coffee', 'iscroll', 'jquery', 'less',
           'marked', 'moment', 'mustache',
           'socketio', 'swfobject', 'underscore'
         ];
