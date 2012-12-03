@@ -13,6 +13,6 @@
   },
   "main": "lib/handlebars.js",
   "output": {
-    "handlbars.js": "."
+    "handlebars.js": "."
   }
 }
