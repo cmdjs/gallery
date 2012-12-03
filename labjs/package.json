@@ -4,7 +4,7 @@
   "version": "2.0.3",
   "description": "Loading And Blocking JavaScript.",
   "author": "Kyle Simpson",
-  "url": "http://labjs.com/",
+  "homepage": "http://labjs.com/",
   "keywords": "loader",
   "output": {
     "lab.js": "."
