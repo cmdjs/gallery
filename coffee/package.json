@@ -1,6 +1,6 @@
 {
   "name": "coffee",
-  "gallery": "gallery",
+  "root": "gallery",
   "description": "Unfancy JavaScript",
   "keywords": ["javascript", "language", "coffeescript", "compiler"],
   "author": "Jeremy Ashkenas",

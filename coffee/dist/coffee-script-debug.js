@@ -1,4 +1,4 @@
-define("coffee/1.4.0/coffee-script-debug", [], function() {
+define("gallery/coffee/1.4.0/coffee-script-debug", [], function() {
 
   /**
  * CoffeeScript Compiler v1.4.0
