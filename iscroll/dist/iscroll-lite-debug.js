@@ -1,5 +1,4 @@
-
-define('#{{id}}', [], function(require, exports, module) {
+define("gallery/iscroll/4.2.5/iscroll-lite-debug", [], function(require, exports, module) {
 
   /*!
  * iScroll Lite base on iScroll v4.1.6 ~ Copyright (c) 2011 Matteo Spinelli, http://cubiq.org
