@@ -1,0 +1,5 @@
+define(function() {
+
+  // @include https://raw.github.com/jashkenas/coffee-script/{{version}}/extras/coffee-script.js
+  return CoffeeScript;
+});
