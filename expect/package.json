@@ -1,0 +1,15 @@
+{
+  "name": "expect",
+  "root": "gallery",
+  "version": "0.2.0",
+  "package": "https://raw.github.com/LearnBoost/expect.js/master/package.json",
+  "description": "BDD style assertions for node and the browser.",
+  "homepage": "https://github.com/LearnBoost/expect.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LearnBoost/expect.js"
+  },
+  "output": {
+    "expect.js": "."
+  }
+}
