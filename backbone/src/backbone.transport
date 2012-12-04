@@ -1,0 +1,12 @@
+define(function(require, exports) {
+
+  var previousUnderscore = this._;
+  var previousJQuery = this.jQuery;
+  this._ = require('underscore');
+  this.jQuery = require('$');
+
+  // @include https://raw.github.com/documentcloud/backbone/{{version}}/backbone.js
+
+  this._ = previousUnderscore;
+  this.jQuery = previousJQuery;
+});
