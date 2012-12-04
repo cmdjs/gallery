@@ -1,0 +1,12 @@
+define(function(require) {
+
+  var _zepto = window.Zepto;
+  var _$ = window.$;
+
+  // @include http://zeptojs.com/zepto.js
+
+  window.Zepto = _zepto;
+  window.$ = _$;
+
+  return Zepto;
+});
