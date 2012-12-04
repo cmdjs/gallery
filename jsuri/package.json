@@ -1,0 +1,31 @@
+{
+  "name": "jsuri",
+  "root": "gallery",
+  "version": "1.2.2",
+  "package": "https://raw.github.com/derek-watson/jsUri/master/package.json",
+  "author": "Derek Watson <watson@dcw.ca> (http://dcw.ca)",
+  "description": "Uri and query string manipulation",
+  "homepage": "https://github.com/derek-watson/jsUri",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/derek-watson/jsUri.git"
+  },
+  "keywords": [
+    "uri",
+    "url",
+    "query",
+    "path"
+  ],
+  "main": "Uri",
+  "scripts": {
+    "test": "jake test"
+  },
+  "dependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  },
+  "output": {
+    "jsuri.js": "."
+  }
+}
