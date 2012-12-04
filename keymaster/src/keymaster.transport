@@ -1,0 +1,6 @@
+define(function(require, exports, module) {
+  var global = {};
+  (function() {
+    // @include https://raw.github.com/lepture/keymaster/master/keymaster.js
+  }).call(global);
+});
