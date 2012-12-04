@@ -10,7 +10,6 @@ modules.forEach(function(m) {
   var module = require('./' + m + '/package.json')
   if (module.package) {
     getJSON(module.package, function(data) {
-      console.log('')
       if (data.version !== module.version) {
         console.info(module.name + ' ' + module.version + ' (latest ' + data.version + ')')
       } else {
@@ -22,7 +21,6 @@ modules.forEach(function(m) {
     var repo = repo.replace('https://github.com/', '')
     var repo = repo.replace('.git', '')
     getVersion(repo, function(version) {
-      console.log('')
       if (module.version != version) {
         console.info(module.name + ' ' + module.version + ' (latest ' + version + ')')
       } else {
@@ -30,7 +28,7 @@ modules.forEach(function(m) {
       }
     })
   } else {
-      console.info('\n' + module.name + ' ' + module.version + ' (check manually)')
+      console.info(module.name + ' ' + module.version + ' (check manually)')
   }
 })
 
@@ -41,7 +39,8 @@ function getJSON(uri, callback) {
 
   connect.get(options, function(res) {
     if (res.statusCode !== 200) {
-      throw 'Error: No data received from ' + uri
+      console.error('Error: No data received from ' + uri)
+      return;
     }
 
     var ret = [], length = 0
