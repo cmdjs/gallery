@@ -1,0 +1,18 @@
+{
+  "name": "mustache",
+  "root": "gallery",
+  "version": "0.7.0",
+  "package": "https://raw.github.com/janl/mustache.js/master/package.json",
+  "description": "Logic-less {{mustache}} templates with JavaScript",
+  "author": "mustache.js Authors <http://github.com/janl/mustache.js>",
+  "keywords": ["mustache", "template", "templates", "ejs"],
+  "main": "./mustache.js",
+  "homepage": "http://mustache.github.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janl/mustache.js"
+  },
+  "output": {
+    "mustache.js": "."
+  }
+}
