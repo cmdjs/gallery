@@ -1,0 +1,7 @@
+define(function(require, exports, module) {
+
+  // @include https://raw.github.com/cubiq/iscroll/master/src/iscroll-lite.js
+
+  module.exports = exports.iScroll;
+
+});
