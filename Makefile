@@ -1,0 +1,2 @@
+check:
+	node checkupdate.js
