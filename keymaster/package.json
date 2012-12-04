@@ -3,6 +3,7 @@
   "root": "gallery",
   "version": "1.0.2",
   "package": "https://raw.github.com/madrobby/keymaster/master/package.json",
+  "homepage": "https://github.com/madrobby/keymaster",
   "description": "library for defining and dispatching keyboard shortcuts",
   "author": "Thomas Fuchs <> (http://mir.aculo.us)",
   "repository": {

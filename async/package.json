@@ -5,6 +5,7 @@
   "main": "./lib/async",
   "author": "Caolan McMahon",
   "version": "0.1.22",
+  "homepage" : "http://github.com/caolan/async",
   "package": "https://raw.github.com/caolan/async/master/package.json",
   "repository" : {
     "type" : "git",
