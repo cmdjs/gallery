@@ -10,16 +10,27 @@ modules.forEach(function(m) {
   var module = require('./' + m + '/package.json')
   if (module.package) {
     getJSON(module.package, function(data) {
-      var package = JSON.parse(data)
       console.log('')
-      if (package.version !== module.version) {
-        console.info(module.name + ' ' + module.version + ' (latest ' + package.version + ')')
+      if (data.version !== module.version) {
+        console.info(module.name + ' ' + module.version + ' (latest ' + data.version + ')')
+      } else {
+        console.info(module.name + ' ' + module.version)
+      }
+    })
+  } else if (module.repository) {
+    var repo = module.repository.url
+    var repo = repo.replace('https://github.com/', '')
+    var repo = repo.replace('.git', '')
+    getVersion(repo, function(version) {
+      console.log('')
+      if (module.version != version) {
+        console.info(module.name + ' ' + module.version + ' (latest ' + version + ')')
       } else {
         console.info(module.name + ' ' + module.version)
       }
     })
   } else {
-    console.warn('\n' + module.name + ' ' + module.version + ' (check manually)')
+      console.info('\n' + module.name + ' ' + module.version + ' (check manually)')
   }
 })
 
@@ -49,8 +60,19 @@ function getJSON(uri, callback) {
       })
 
       var data = buf.toString()
+      data = JSON.parse(data)
       callback(data)
     })
 
+  })
+}
+
+function getVersion(repo, callback) {
+  var uri = 'https://api.github.com/repos/' + repo + '/tags'
+  getJSON(uri, function(tags) {
+    var names = tags.map(function(tag) {
+      return tag.name.replace(/^[^\d\.]*((?:\d\.)+\d).*$/, '$1');
+    });
+    callback(names.sort().pop());
   })
 }
