@@ -1,0 +1,24 @@
+{
+  "name": "marked",
+  "root": "gallery",
+  "version": "0.2.6",
+  "package": "https://raw.github.com/chjj/marked/master/package.json",
+  "description": "A markdown parser built for speed",
+  "author": "Christopher Jeffrey",
+  "main": "./lib/marked.js",
+  "bin": "./bin/marked",
+  "man": "./man/marked.1",
+  "preferGlobal": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chjj/marked"
+  },
+  "homepage": "https://github.com/chjj/marked",
+  "bugs": { "url": "http://github.com/chjj/marked/issues" },
+  "keywords": [ "markdown", "markup", "html" ],
+  "tags": [ "markdown", "markup", "html" ],
+  "scripts": { "test": "node test", "bench": "node test --bench" },
+  "output": {
+    "marked.js": "."
+  }
+}
