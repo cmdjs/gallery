@@ -1,0 +1,27 @@
+{
+  "name": "selection",
+  "version": "0.9.0",
+  "root": "gallery",
+  "description": "selection manipulating for textarea.",
+  "homepage": "http://lab.lepture.org/selection.js/",
+  "author": "Hsiaoming Yang <lepture@me.com>",
+  "keywords": [
+    "selection",
+    "textarea",
+    "editor"
+  ],
+  "main": "./selection.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lepture/selection.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lepture/selection.js/issues"
+  },
+  "licenses": [{
+    "type": "BSD"
+  }],
+  "output": {
+    "selection.js": "."
+  }
+}
