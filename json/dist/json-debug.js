@@ -486,5 +486,5 @@ if (typeof JSON !== 'object') {
     }
 }());
 
-return this.JSON = JSON;
+return this.JSON = this.JSON || JSON;
 });
