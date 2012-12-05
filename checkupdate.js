@@ -10,10 +10,13 @@ modules.forEach(function(m) {
   var module = require('./' + m + '/package.json')
   if (module.package) {
     getJSON(module.package, function(data) {
-      if (data.version !== module.version) {
+      if (data.version && data.version !== module.version) {
         console.info(module.name + ' ' + module.version + ' (latest ' + data.version + ')')
-      } else {
+      } else if (data.version) {
         console.info(module.name + ' ' + module.version)
+      } else {
+        console.info(module.name + ' ' + module.version + ' (check ' +
+                     module.repository.url + ')')
       }
     })
   } else if (module.repository) {
@@ -28,7 +31,8 @@ modules.forEach(function(m) {
       }
     })
   } else {
-      console.info(module.name + ' ' + module.version + ' (check manually)')
+      console.info(module.name + ' ' + module.version + ' (check ' +
+                   module.homepage + ')')
   }
 })
 

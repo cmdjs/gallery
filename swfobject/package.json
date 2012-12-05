@@ -5,6 +5,10 @@
   "description": "SWFObject is an easy-to-use and standards-friendly method to embed Flash content, which utilizes one small JavaScript file.",
   "author": "https://github.com/swfobject",
   "homepage": "https://github.com/swfobject/swfobject",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/swfobject/swfobject.git"
+  },
   "output": {
     "swfobject.js": ".",
     "expressInstall.swf": "https://github.com/swfobject/swfobject/raw/master/swfobject/expressInstall.swf"
