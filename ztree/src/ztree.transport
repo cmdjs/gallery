@@ -1,4 +1,4 @@
 define(function(require, exports, module) {
   var jQuery = require('$');
-  // @include https://raw.github.com/swain/zTree/master/{{version}}/ztree-debug.js 
+  // @include https://raw.github.com/swain/zTree/{{version}}/src/ztree.js
 });
