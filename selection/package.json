@@ -4,7 +4,7 @@
   "root": "gallery",
   "package": "https://raw.github.com/lepture/selection.js/master/package.json",
   "description": "selection manipulating for textarea.",
-  "homepage": "http://lab.lepture.org/selection.js/",
+  "homepage": "http://lab.lepture.com/selection.js/",
   "author": "Hsiaoming Yang <lepture@me.com>",
   "keywords": [
     "selection",
