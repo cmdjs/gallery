@@ -3,7 +3,8 @@ var modules = [
   'async', 'backbone', 'coffee', 'es5-safe', 'expect', 'handlebars',
   'html5shiv', 'iscroll', 'jquery', 'jquery-color', 'json', 'jsuri',
   'keymaster', 'labjs', 'less', 'marked', 'mocha', 'moment', 'mustache',
-  'socketio', 'store', 'swfobject', 'underscore', 'zepto', 'ztree'
+  'selection', 'socketio', 'store', 'swfobject', 'underscore', 'zepto',
+  'ztree'
 ]
 
 modules.forEach(function(m) {
