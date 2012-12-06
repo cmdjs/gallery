@@ -1,0 +1,13 @@
+define(function(require, exports, module) {
+
+    require('./impress.css');
+
+// @include https://raw.github.com/bartaz/impress.js/{{version}}/js/impress.js
+
+    exports = impress;
+    window.impress = null;
+    try {
+        delete window.impress;
+    } catch(e) {}
+
+});
