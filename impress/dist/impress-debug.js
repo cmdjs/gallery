@@ -804,7 +804,7 @@ define("gallery/impress/0.5.3/impress-debug", [], function(require, exports, mod
 // will help somebody learn at least some part of it.
 
 
-    exports = impress;
+    module.exports = window.impress;
     window.impress = null;
     try {
         delete window.impress;
