@@ -11,7 +11,7 @@
     "underscore": "gallery/underscore/1.4.2/underscore"
   },
   "main": "backbone.js",
-  "version": "0.9.2",
+  "version": "0.9.9",
   "output": {
     "backbone.js": "."
   }
