@@ -4,7 +4,7 @@ var modules = [
   'html5shiv', 'iscroll', 'jquery', 'jquery-color', 'json', 'jsuri',
   'keymaster', 'labjs', 'less', 'marked', 'mocha', 'moment', 'mustache',
   'selection', 'socketio', 'store', 'swfobject', 'underscore', 'zepto',
-  'ztree'
+  'ztree', 'juicer'
 ]
 
 modules.forEach(function(m) {
