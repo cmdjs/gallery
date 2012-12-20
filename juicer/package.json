@@ -1,0 +1,18 @@
+{
+    "name": "juicer",
+    "root": "gallery",
+    "version": "0.6.4",
+    "package": "https://raw.github.com/PaulGuo/Juicer/master/package.json",
+    "description": "A High-performance Lightweight JavaScript Template Engine",
+    "author": "juicer.js Authors <badkaikai@gmail.com | http://benben.cc>",
+    "keywords": ["juicer", "template", "templates", "juicerjs", "engine", "javascript"],
+    "main": "./juicer.js",
+    "homepage": "http://juicer.name/",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:PaulGuo/Juicer.git"
+    },
+    "output": {
+        "juicer.js": "."
+    }
+}
