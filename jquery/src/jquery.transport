@@ -1,6 +1,6 @@
 define(function(require) {
 
-  // @include http://code.jquery.com/jquery-{{version}}.js
+  // @include http://code.jquery.com/jquery-{{version}}.min.js
 
   return $.noConflict(true);
 });
