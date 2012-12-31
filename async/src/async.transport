@@ -1,3 +1,4 @@
 define(function(require, exports, module) {
-  // @include https://raw.github.com/caolan/async/v{{version}}/lib/async.js
+  // @srcUrl https://raw.github.com/caolan/async/v{{version}}/lib/async.js
+  // @minUrl https://raw.github.com/caolan/async/v{{version}}/dist/async.min.js
 });
