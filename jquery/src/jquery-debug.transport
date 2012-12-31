@@ -1,6 +1,0 @@
-define(function(require) {
-
-  // @include http://code.jquery.com/jquery-{{version}}.js
-
-  return $.noConflict(true);
-});

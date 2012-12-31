@@ -1,6 +1,7 @@
 define(function(require) {
 
-  // @include http://code.jquery.com/jquery-{{version}}.min.js
+  // @srcUrl http://code.jquery.com/jquery-{{version}}.js
+  // @minUrl http://code.jquery.com/jquery-{{version}}.min.js
 
   return $.noConflict(true);
 });
