@@ -5,7 +5,8 @@ define(function(require, exports) {
   this._ = require('underscore');
   this.jQuery = require('$');
 
-  // @include https://raw.github.com/documentcloud/backbone/{{version}}/backbone.js
+  // @srcUrl https://raw.github.com/documentcloud/backbone/{{version}}/backbone.js
+  // @minUrl https://raw.github.com/documentcloud/backbone/{{version}}/backbone-min.js
 
   this._ = previousUnderscore;
   this.jQuery = previousJQuery;
