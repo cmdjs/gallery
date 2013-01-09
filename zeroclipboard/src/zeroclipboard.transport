@@ -1,0 +1,13 @@
+define(function(require, exports, module) {
+
+// @include https://raw.github.com/jonrohan/ZeroClipboard/v{{version}}/ZeroClipboard.js
+
+    module.exports = ZeroClipboard;
+
+    window.ZeroClipboard = null;
+    try {
+        delete window.ZeroClipboard;
+    } catch(e) {}
+
+});
+
