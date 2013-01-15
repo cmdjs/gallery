@@ -4,10 +4,5 @@ define(function(require, exports, module) {
 
     module.exports = ZeroClipboard;
 
-    window.ZeroClipboard = null;
-    try {
-        delete window.ZeroClipboard;
-    } catch(e) {}
-
 });
 
