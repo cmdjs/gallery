@@ -338,5 +338,5 @@ define("gallery/zeroclipboard/1.1.6/zeroclipboard-debug", [], function(require, 
             window.ZeroClipboard = ZeroClipboard;
         }
     })();
-    module.exports = ZeroClipboard;
+    window.ZeroClipboard = module.exports;
 });
