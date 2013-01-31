@@ -17,6 +17,10 @@
     "$": "$"
   },
   "output": {
-    "ztree.js": "."
+    "ztree.js": ["ztree.js"],
+    "core.js": ["core.js"],
+    "excheck.js": ["excheck.js"],
+    "exedit.js": ["exedit.js"],
+    "exhide.js": ["exhide.js"]
   }
 }
