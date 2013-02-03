@@ -1,7 +1,7 @@
 {
   "name": "ztree",
   "root": "gallery",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "package": "https://raw.github.com/swain/zTree/master/package.json",
   "description": "A jQuery tree plugin",
   "author": "zTree",
@@ -17,6 +17,10 @@
     "$": "$"
   },
   "output": {
-    "ztree.js": "."
+    "ztree.js": ["ztree.js"],
+    "core.js": ["core.js"],
+    "excheck.js": ["excheck.js"],
+    "exedit.js": ["exedit.js"],
+    "exhide.js": ["exhide.js"]
   }
 }
