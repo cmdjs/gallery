@@ -1,0 +1,3 @@
+[submodule "grunt-spm-build"]
+	path = grunt-spm-build
+	url = git://github.com/spmjs/grunt-spm-build.git
