@@ -1,19 +1,17 @@
 {
   "name": "backbone",
   "root": "gallery",
-  "type": "transport",
   "description": "Give your JS App some Backbone with Models, Views, Collections, and Events.",
   "homepage": "http://backbonejs.org",
   "keywords": ["model", "view", "controller", "router", "server", "client", "browser"],
   "author": "Jeremy Ashkenas <jeremy@documentcloud.org>",
   "package": "https://raw.github.com/documentcloud/backbone/master/package.json",
-  "dependencies": {
-    "$": "$",
-    "underscore": "gallery/underscore/1.4.2/underscore"
+  "spm": {
+    "alias": {
+      "$": "$",
+      "underscore": "gallery/underscore/1.4.4/underscore"
+    }
   },
   "main": "backbone.js",
-  "version": "0.9.9",
-  "output": {
-    "backbone.js": "."
-  }
+  "version": "0.9.10"
 }

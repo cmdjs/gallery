@@ -8,8 +8,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aFarkas/html5shiv.git"
-  },
-  "output": {
-    "html5shiv.js": "."
   }
 }
