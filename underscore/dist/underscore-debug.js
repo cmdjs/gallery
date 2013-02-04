@@ -1,7 +1,7 @@
-define("gallery/underscore/1.4.3/underscore-debug", [], function(require, exports, module) {
-    //     Underscore.js 1.4.3
+define("gallery/underscore/1.4.4/underscore-debug", [], function(require, exports, module) {
+    //     Underscore.js 1.4.4
     //     http://underscorejs.org
-    //     (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
+    //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud Inc.
     //     Underscore may be freely distributed under the MIT license.
     (function() {
         // Baseline setup
@@ -38,7 +38,7 @@ define("gallery/underscore/1.4.3/underscore-debug", [], function(require, export
             root._ = _;
         }
         // Current version.
-        _.VERSION = "1.4.3";
+        _.VERSION = "1.4.4";
         // Collection Functions
         // --------------------
         // The cornerstone, an `each` implementation, aka `forEach`.
@@ -185,8 +185,9 @@ define("gallery/underscore/1.4.3/underscore-debug", [], function(require, export
         // Invoke a method (with arguments) on every item in a collection.
         _.invoke = function(obj, method) {
             var args = slice.call(arguments, 2);
+            var isFunc = _.isFunction(method);
             return _.map(obj, function(value) {
-                return (_.isFunction(method) ? method : value[method]).apply(value, args);
+                return (isFunc ? method : value[method]).apply(value, args);
             });
         };
         // Convenience version of a common use case of `map`: fetching a property.
@@ -196,15 +197,20 @@ define("gallery/underscore/1.4.3/underscore-debug", [], function(require, export
             });
         };
         // Convenience version of a common use case of `filter`: selecting only objects
-        // with specific `key:value` pairs.
-        _.where = function(obj, attrs) {
-            if (_.isEmpty(attrs)) return [];
-            return _.filter(obj, function(value) {
+        // containing specific `key:value` pairs.
+        _.where = function(obj, attrs, first) {
+            if (_.isEmpty(attrs)) return first ? null : [];
+            return _[first ? "find" : "filter"](obj, function(value) {
                 for (var key in attrs) {
                     if (attrs[key] !== value[key]) return false;
                 }
                 return true;
             });
+        };
+        // Convenience version of a common use case of `find`: getting the first object
+        // containing specific `key:value` pairs.
+        _.findWhere = function(obj, attrs) {
+            return _.where(obj, attrs, true);
         };
         // Return the maximum element or (element-based computation).
         // Can't optimize arrays of integers longer than 65,535 elements.
@@ -510,32 +516,29 @@ define("gallery/underscore/1.4.3/underscore-debug", [], function(require, export
         };
         // Function (ahem) Functions
         // ------------------
-        // Reusable constructor function for prototype setting.
-        var ctor = function() {};
         // Create a function bound to a given object (assigning `this`, and arguments,
-        // optionally). Binding with arguments is also known as `curry`.
-        // Delegates to **ECMAScript 5**'s native `Function.bind` if available.
-        // We check for `func.bind` first, to fail fast when `func` is undefined.
+        // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
+        // available.
         _.bind = function(func, context) {
-            var args, bound;
             if (func.bind === nativeBind && nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
-            if (!_.isFunction(func)) throw new TypeError();
-            args = slice.call(arguments, 2);
-            return bound = function() {
-                if (!(this instanceof bound)) return func.apply(context, args.concat(slice.call(arguments)));
-                ctor.prototype = func.prototype;
-                var self = new ctor();
-                ctor.prototype = null;
-                var result = func.apply(self, args.concat(slice.call(arguments)));
-                if (Object(result) === result) return result;
-                return self;
+            var args = slice.call(arguments, 2);
+            return function() {
+                return func.apply(context, args.concat(slice.call(arguments)));
+            };
+        };
+        // Partially apply a function by creating a version that has had some of its
+        // arguments pre-filled, without changing its dynamic `this` context.
+        _.partial = function(func) {
+            var args = slice.call(arguments, 1);
+            return function() {
+                return func.apply(this, args.concat(slice.call(arguments)));
             };
         };
         // Bind all of an object's methods to that object. Useful for ensuring that
         // all callbacks defined on an object belong to it.
         _.bindAll = function(obj) {
             var funcs = slice.call(arguments, 1);
-            if (funcs.length == 0) funcs = _.functions(obj);
+            if (funcs.length === 0) funcs = _.functions(obj);
             each(funcs, function(f) {
                 obj[f] = _.bind(obj[f], obj);
             });
@@ -922,7 +925,7 @@ define("gallery/underscore/1.4.3/underscore-debug", [], function(require, export
                 max = min;
                 min = 0;
             }
-            return min + (0 | Math.random() * (max - min + 1));
+            return min + Math.floor(Math.random() * (max - min + 1));
         };
         // List of HTML entities for escaping.
         var entityMap = {
@@ -972,7 +975,7 @@ define("gallery/underscore/1.4.3/underscore-debug", [], function(require, export
         // Useful for temporary DOM ids.
         var idCounter = 0;
         _.uniqueId = function(prefix) {
-            var id = "" + ++idCounter;
+            var id = ++idCounter + "";
             return prefix ? prefix + id : id;
         };
         // By default, Underscore uses ERB-style template delimiters, change the
@@ -1002,6 +1005,7 @@ define("gallery/underscore/1.4.3/underscore-debug", [], function(require, export
         // Underscore templating handles arbitrary delimiters, preserves whitespace,
         // and correctly escapes quotes within interpolated code.
         _.template = function(text, data, settings) {
+            var render;
             settings = _.defaults({}, settings, _.templateSettings);
             // Combine delimiters into one regular expression via alternation.
             var matcher = new RegExp([ (settings.escape || noMatch).source, (settings.interpolate || noMatch).source, (settings.evaluate || noMatch).source ].join("|") + "|$", "g");
@@ -1029,7 +1033,7 @@ define("gallery/underscore/1.4.3/underscore-debug", [], function(require, export
             if (!settings.variable) source = "with(obj||{}){\n" + source + "}\n";
             source = "var __t,__p='',__j=Array.prototype.join," + "print=function(){__p+=__j.call(arguments,'');};\n" + source + "return __p;\n";
             try {
-                var render = new Function(settings.variable || "obj", "_", source);
+                render = new Function(settings.variable || "obj", "_", source);
             } catch (e) {
                 e.source = source;
                 throw e;
@@ -1086,4 +1090,4 @@ define("gallery/underscore/1.4.3/underscore-debug", [], function(require, export
             }
         });
     }).call(this);
-});
+})
