@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   var request = require('request');
 
   var modules = fs.readdirSync('.').filter(function(name) {
-    return fs.statSync(name).isDirectory() && !grunt.util._.contains(['.git', 'grunt-spm-build', 'node_modules'], name);
+    return fs.statSync(name).isDirectory() && !grunt.util._.contains(['.git', '_tasks', 'node_modules'], name);
   });
 
   grunt.registerTask('check', function() {
