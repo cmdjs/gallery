@@ -3,7 +3,7 @@
   "root": "gallery",
   "type": "transport",
   "description": "JavaScript library for DOM operations",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "package": "https://raw.github.com/jquery/jquery/master/package.json",
   "homepage": "http://jquery.com",
   "author": {
