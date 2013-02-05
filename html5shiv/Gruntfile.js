@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: pkg,
 
-    'spm-download': {
+    download: {
       options: {
         dest: 'dist'
       },
@@ -19,6 +19,6 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadTasks('../grunt-spm-build/tasks');
-  grunt.registerTask('build', ['spm-download']);
+  grunt.loadTasks('../_tasks/download/tasks');
+  grunt.registerTask('build', ['download']);
 };

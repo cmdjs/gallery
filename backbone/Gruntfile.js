@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: pkg,
 
-    'spm-download': {
+    download: {
       options: {
         dest: 'src',
         transform: function(code) {
@@ -60,10 +60,11 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadTasks('../grunt-spm-build/tasks');
+  grunt.loadTasks('../_tasks/grunt-spm-build/tasks');
+  grunt.loadTasks('../_tasks/download/tasks');
   grunt.registerTask(
     'build', [
-      'spm-download',
+      'download',
       'spm-transport:src', 'spm-beautify:src', 'spm-transport:min',
       'spm-clean'
     ]

@@ -1,0 +1,12 @@
+{
+  "name": "download",
+  "description": "grunt tasks for download.",
+  "version": "0.1.1a1",
+  "author": {
+    "name": "Hsiaoming Yang",
+    "email": "lepture@me.com"
+  },
+  "dependencies": {
+    "request": "~2.12.0"
+  }
+}

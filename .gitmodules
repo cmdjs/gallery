@@ -1,3 +1,3 @@
-[submodule "grunt-spm-build"]
-	path = grunt-spm-build
-	url = git://github.com/spmjs/grunt-spm-build.git
+[submodule "_tasks/grunt-spm-build"]
+	path = _tasks/grunt-spm-build
+	url = https://github.com/spmjs/grunt-spm-build.git
