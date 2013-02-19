@@ -22,5 +22,8 @@
   "keywords": [
     "scroll",
     "dom"
-  ]
+  ],
+  "output": {
+    "scrollmonitor.js": "."
+  }
 }
