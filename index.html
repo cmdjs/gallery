@@ -4,23 +4,29 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
     <title>Gallery</title>
-    <link href="http://aralejs.org/static/css/mocha.css?v=e5358" type="text/css" rel="stylesheet" charset="utf-8">
-    <script src="https://a.alipayobjects.com/seajs/1.2.1/sea.js"></script>
+    <link href="node_modules/mocha/mocha.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="node_modules/seajs/dist/sea.js"></script>
+    <script src="node_modules/mocha/mocha.js"></script>
+    <script src="node_modules/expect.js/expect.js"></script>
     <script type="text/javascript">
       seajs.config({
+        base: './',
         alias: {
-          '$': 'gallery/jquery/1.7.2/jquery.js',
-          '$-debug': 'gallery/jquery/1.7.2/jquery-debug.js'
-        }
+          '$': 'jquery/dist/jquery'
+        },
+        map: [
+          function(url) {
+            var regex = /gallery\/(.*?)\/\d+\..*?\/(.*)$/
+            return url.replace(regex, '$1/dist/$2')
+          }
+        ]
       });
     </script>
-    <script src="http://aralejs.org/static/js/es5-safe.js?v=16605"></script>
-    <script src="http://aralejs.org/static/js/test-suite.js?v=6a971"></script>
   </head>
   <body>
     <div id="mocha">Modules in Gallery</div>
     <script>
-      seajs.use(['./expect/dist/expect'], function(expect) {
+      (function() {
         mocha.setup('bdd');
 
         var modules = [
@@ -29,9 +35,9 @@
           'labjs', 'less', 'marked', 'moment', 'mustache', 'selection',
           'socketio', 'store', 'swfobject', 'underscore', 'zepto', 'ztree',
           'juicer'
-        ];
+        ]
 
-        var specs = [];
+        var specs = []
         for (var i = 0; i < modules.length; i++) {
           specs[i] = './' + modules[i] + '/spec.js'
         }
@@ -43,7 +49,7 @@
             mocha.run()
           }
         })
-      })
+      })()
     </script>
   </body>
 </html>
