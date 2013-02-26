@@ -1,6 +1,10 @@
-transports
+gallery
 ==========
 
-transport third part modules to CMD modules.
+```
+npm install
+grunt check
 
-https://github.com/spmjs/spm/wiki/spm-transport
+cd moment
+grunt build
+```

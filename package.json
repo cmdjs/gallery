@@ -7,6 +7,7 @@
     "mocha": "*",
     "expect.js": "*",
     "request": "*",
+    "grunt-spm-build": "0.1.1a2",
     "async": "*"
   }
 }
