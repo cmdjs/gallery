@@ -12,35 +12,14 @@ module.exports = function(grunt) {
       },
       src: {
         url: 'https://raw.github.com/caolan/async/v<%= pkg.version %>/lib/async.js',
-        name: 'async-debug.js'
-      },
-      min: {
-        url: 'https://raw.github.com/caolan/async/v<%= pkg.version %>/dist/async.min.js',
         name: 'async.js'
       }
-    },
-
-    'spm-transport': {
-      options: {
-        pkg: pkg,
-        src: 'src',
-        dest: 'dist'
-      },
-      min: {
-        src: ['src/async.js'],
-        options: {
-          uglify: {}
-        }
-      },
-      debug: ['src/async-debug.js']
-    },
-
-    'spm-clean': {
-      all: ['src']
     }
   });
 
+
+  require('../node_modules/grunt-spm-build/').init(grunt, {pkg: pkg});
   grunt.loadTasks('../node_modules/grunt-spm-build/tasks');
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.registerTask('build', ['download', 'spm-transport', 'spm-clean']);
+  grunt.registerTask('build', ['download', 'spm-build']);
 };
