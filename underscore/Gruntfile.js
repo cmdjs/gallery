@@ -4,13 +4,13 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: pkg,
 
-    'spm-download': {
+    download: {
       options: {
         dest: 'src',
         header: 'define(function(require, exports, module) {',
         footer: '});'
       },
-      src: {
+      debug: {
         url: 'https://raw.github.com/documentcloud/underscore/<%= pkg.version %>/underscore.js',
         name: 'underscore-debug.js'
       },
@@ -40,6 +40,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadTasks('../grunt-spm-build/tasks');
-  grunt.registerTask('build', ['spm-download', 'spm-transport', 'spm-clean']);
+  grunt.loadTasks('../_tasks/grunt-spm-build/tasks');
+  grunt.loadTasks('../_tasks/download/tasks');
+  grunt.registerTask('build', ['download', 'spm-transport', 'spm-clean']);
 };
