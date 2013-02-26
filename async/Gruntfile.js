@@ -40,7 +40,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadTasks('../_tasks/grunt-spm-build/tasks');
+  grunt.loadTasks('../node_modules/grunt-spm-build/tasks');
   grunt.loadTasks('../_tasks/download/tasks');
   grunt.registerTask('build', ['download', 'spm-transport', 'spm-clean']);
 };
