@@ -1,7 +1,7 @@
 {
   "name": "moment",
-  "root": "gallery",
-  "version": "1.7.2",
+  "family": "gallery",
+  "version": "2.0.0",
   "package": "https://raw.github.com/timrwood/moment/master/package.json",
   "description": "Parse, manipulate, and display dates.",
   "homepage": "http://momentjs.com",
@@ -33,7 +33,9 @@
       "type" : "MIT"
     }
   ],
-  "output": {
-    "moment.js": "."
+  "spm": {
+    "output": {
+      "moment.js": "moment.js"
+    }
   }
 }
