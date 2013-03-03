@@ -1,8 +1,9 @@
 {
-  "root": "gallery",
+  "family": "gallery",
   "name": "handlebars",
   "description": "Extension of the Mustache logicless template language",
   "version": "1.0.0",
+  "version2": "1.0.0-rc.3",
   "package": "https://raw.github.com/wycats/handlebars.js/master/package.json",
   "homepage": "http://www.handlebarsjs.com/",
   "keywords": [
@@ -13,7 +14,9 @@
     "url": "https://github.com/wycats/handlebars.js"
   },
   "main": "lib/handlebars.js",
-  "output": {
-    "handlebars.js": "."
+  "spm": {
+    "output": {
+      "handlebars.js": "."
+    }
   }
 }

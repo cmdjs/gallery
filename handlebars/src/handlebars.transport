@@ -1,6 +1,0 @@
-define(function() {
-
- // @include http://cloud.github.com/downloads/wycats/handlebars.js/handlebars-1.0.rc.1.js
-
-return Handlebars;
-});
