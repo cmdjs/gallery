@@ -1,22 +1,21 @@
-define("gallery/mustache/0.7.1/mustache-debug", [], function(require, exports, module) {
+define("gallery/mustache/0.7.2/mustache-debug", [], function(require, exports, module) {
     /*!
  * mustache.js - Logic-less {{mustache}} templates with JavaScript
  * http://github.com/janl/mustache.js
  */
     /*global define: false*/
-    var Mustache;
-    (function(exports) {
-        if (typeof module !== "undefined" && module.exports) {
-            module.exports = exports;
-        } else if (typeof define === "function") {
-            define(exports);
+    (function(root, factory) {
+        if (typeof exports === "object" && exports) {
+            module.exports = factory;
+        } else if (typeof define === "function" && define.amd) {
+            define(factory);
         } else {
-            Mustache = exports;
+            root.Mustache = factory;
         }
-    })(function() {
+    })(this, function() {
         var exports = {};
         exports.name = "mustache.js";
-        exports.version = "0.7.1";
+        exports.version = "0.7.2";
         exports.tags = [ "{{", "}}" ];
         exports.Scanner = Scanner;
         exports.Context = Context;
@@ -243,21 +242,6 @@ define("gallery/mustache/0.7.1/mustache-debug", [], function(require, exports, m
             return exports.escape(this._name(name, context));
         };
         /**
-   * Calculates the bounds of the section represented by the given `token` in
-   * the original template by drilling down into nested sections to find the
-   * last token that is part of that section. Returns an array of [start, end].
-   */
-        function sectionBounds(token) {
-            var start = token[3];
-            var end = start;
-            var tokens;
-            while ((tokens = token[4]) && tokens.length) {
-                token = tokens[tokens.length - 1];
-                end = token[3];
-            }
-            return [ start, end ];
-        }
-        /**
    * Low-level function that compiles the given `tokens` into a function
    * that accepts three arguments: a Writer, a Context, and the template.
    */
@@ -279,7 +263,7 @@ define("gallery/mustache/0.7.1/mustache-debug", [], function(require, exports, m
                     token = tokens[i];
                     switch (token[0]) {
                       case "#":
-                        sectionText = template.slice.apply(template, sectionBounds(token));
+                        sectionText = template.slice(token[3], token[5]);
                         buffer += writer._section(token[1], context, sectionText, subRender(i, token[4], template));
                         break;
 
@@ -309,48 +293,34 @@ define("gallery/mustache/0.7.1/mustache-debug", [], function(require, exports, m
         }
         /**
    * Forms the given array of `tokens` into a nested tree structure where
-   * tokens that represent a section have a fifth item: an array that contains
-   * all tokens in that section.
+   * tokens that represent a section have two additional items: 1) an array of
+   * all tokens that appear in that section and 2) the index in the original
+   * template that represents the end of that section.
    */
         function nestTokens(tokens) {
             var tree = [];
             var collector = tree;
             var sections = [];
-            var token, section;
-            for (var i = 0; i < tokens.length; ++i) {
+            var token;
+            for (var i = 0, len = tokens.length; i < len; ++i) {
                 token = tokens[i];
                 switch (token[0]) {
                   case "#":
                   case "^":
-                    token[4] = [];
                     sections.push(token);
                     collector.push(token);
-                    collector = token[4];
+                    collector = token[4] = [];
                     break;
 
                   case "/":
-                    if (sections.length === 0) {
-                        throw new Error("Unopened section: " + token[1]);
-                    }
-                    section = sections.pop();
-                    if (section[1] !== token[1]) {
-                        throw new Error("Unclosed section: " + section[1]);
-                    }
-                    if (sections.length > 0) {
-                        collector = sections[sections.length - 1][4];
-                    } else {
-                        collector = tree;
-                    }
+                    var section = sections.pop();
+                    section[5] = token[2];
+                    collector = sections.length > 0 ? sections[sections.length - 1][4] : tree;
                     break;
 
                   default:
                     collector.push(token);
                 }
-            }
-            // Make sure there were no open sections when we're done.
-            section = sections.pop();
-            if (section) {
-                throw new Error("Unclosed section: " + section[1]);
             }
             return tree;
         }
@@ -359,10 +329,11 @@ define("gallery/mustache/0.7.1/mustache-debug", [], function(require, exports, m
    * to a single token.
    */
         function squashTokens(tokens) {
-            var token, lastToken, squashedTokens = [];
-            for (var i = 0; i < tokens.length; ++i) {
+            var squashedTokens = [];
+            var token, lastToken;
+            for (var i = 0, len = tokens.length; i < len; ++i) {
                 token = tokens[i];
-                if (lastToken && lastToken[0] === "text" && token[0] === "text") {
+                if (token[0] === "text" && lastToken && lastToken[0] === "text") {
                     lastToken[1] += token[1];
                     lastToken[3] = token[3];
                 } else {
@@ -373,9 +344,6 @@ define("gallery/mustache/0.7.1/mustache-debug", [], function(require, exports, m
             return squashedTokens;
         }
         function escapeTags(tags) {
-            if (tags.length !== 2) {
-                throw new Error("Invalid tags: " + tags.join(" "));
-            }
             return [ new RegExp(escapeRe(tags[0]) + "\\s*"), new RegExp("\\s*" + escapeRe(tags[1])) ];
         }
         /**
@@ -387,12 +355,21 @@ define("gallery/mustache/0.7.1/mustache-debug", [], function(require, exports, m
         exports.parse = function(template, tags) {
             template = template || "";
             tags = tags || exports.tags;
+            if (typeof tags === "string") tags = tags.split(spaceRe);
+            if (tags.length !== 2) {
+                throw new Error("Invalid tags: " + tags.join(", "));
+            }
             var tagRes = escapeTags(tags);
             var scanner = new Scanner(template);
-            var tokens = [], // Buffer to hold the tokens
-            spaces = [], // Indices of whitespace tokens on the current line
-            hasTag = false, // Is there a {{tag}} on the current line?
-            nonSpace = false;
+            var sections = [];
+            // Stack to hold section tokens
+            var tokens = [];
+            // Buffer to hold the tokens
+            var spaces = [];
+            // Indices of whitespace tokens on the current line
+            var hasTag = false;
+            // Is there a {{tag}} on the current line?
+            var nonSpace = false;
             // Is there a non-space char on the current line?
             // Strips all whitespace tokens array for the current line
             // if there was a {{#tag}} on it and otherwise only space.
@@ -453,18 +430,37 @@ define("gallery/mustache/0.7.1/mustache-debug", [], function(require, exports, m
                 if (!scanner.scan(tagRes[1])) {
                     throw new Error("Unclosed tag at " + scanner.pos);
                 }
-                tokens.push([ type, value, start, scanner.pos ]);
-                if (type === "name" || type === "{" || type === "&") {
-                    nonSpace = true;
+                // Check section nesting.
+                if (type === "/") {
+                    if (sections.length === 0) {
+                        throw new Error('Unopened section "' + value + '" at ' + start);
+                    }
+                    var section = sections.pop();
+                    if (section[1] !== value) {
+                        throw new Error('Unclosed section "' + section[1] + '" at ' + start);
+                    }
                 }
-                // Set the tags for the next time around.
-                if (type === "=") {
+                var token = [ type, value, start, scanner.pos ];
+                tokens.push(token);
+                if (type === "#" || type === "^") {
+                    sections.push(token);
+                } else if (type === "name" || type === "{" || type === "&") {
+                    nonSpace = true;
+                } else if (type === "=") {
+                    // Set the tags for the next time around.
                     tags = value.split(spaceRe);
+                    if (tags.length !== 2) {
+                        throw new Error("Invalid tags at " + start + ": " + tags.join(", "));
+                    }
                     tagRes = escapeTags(tags);
                 }
             }
-            tokens = squashTokens(tokens);
-            return nestTokens(tokens);
+            // Make sure there are no open sections when we're done.
+            var section = sections.pop();
+            if (section) {
+                throw new Error('Unclosed section "' + section[1] + '" at ' + scanner.pos);
+            }
+            return nestTokens(squashTokens(tokens));
         };
         // The high-level clearCache, compile, compilePartial, and render functions
         // use this default writer.
