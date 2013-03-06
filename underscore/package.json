@@ -1,5 +1,6 @@
 {
     "name": "underscore",
+    "root": "gallery",
     "family": "gallery",
     "version": "1.4.4",
     "package": "https://raw.github.com/documentcloud/underscore/master/package.json",
