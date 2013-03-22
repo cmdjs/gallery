@@ -23,18 +23,12 @@ module.exports = function(grunt) {
         url: 'https://raw.github.com/lepture/keymaster/master/keymaster.js',
         name: 'keymaster.js'
       }
-    },
-    'spm-clean': {
-      build: ['tmp-transport', 'tmp-concat'],
-      src: ['src']
     }
   });
 
-  require('../_tasks/grunt-spm-build').init(grunt, {pkg: pkg});
+  require('grunt-spm-build').initConfig(grunt, {pkg: pkg});
 
-  grunt.loadTasks('../_tasks/grunt-spm-build/tasks');
+  grunt.loadGlobalTasks('grunt-spm-build');
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.registerTask(
-    'build', ['download', 'spm-build', 'spm-clean:src']
-  );
+  grunt.registerTask('build', ['download', 'spm-build']);
 };

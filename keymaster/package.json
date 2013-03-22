@@ -1,6 +1,6 @@
 {
   "name": "keymaster",
-  "root": "gallery",
+  "family": "gallery",
   "version": "1.0.2",
   "package": "https://raw.github.com/madrobby/keymaster/master/package.json",
   "homepage": "https://github.com/madrobby/keymaster",
@@ -12,8 +12,6 @@
   },
   "main": "./keymaster.js",
   "spm": {
-    "output": {
-      "keymaster.js": "keymaster.js"
-    }
+    "output": ["keymaster.js"]
   }
 }
