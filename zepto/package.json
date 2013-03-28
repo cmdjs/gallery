@@ -1,7 +1,7 @@
 {
   "name": "zepto",
   "root": "gallery",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Thomas Fuchs",
   "homepage": "http://zeptojs.com/",
   "description": "Zepto is a minimalist JavaScript framework for modern browsers with a largely jQuery-compatible API.",

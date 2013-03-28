@@ -1,4 +1,4 @@
-define("gallery/zepto/1.0.1/zepto-debug", [], function(require) {
+define("gallery/zepto/1.0.2/zepto-debug", [], function(require) {
     var _zepto = window.Zepto;
     var _$ = window.$;
     (function(undefined) {
