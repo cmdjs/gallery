@@ -34,8 +34,6 @@
     }
   ],
   "spm": {
-    "output": {
-      "moment.js": "moment.js"
-    }
+    "output": ["moment.js"]
   }
 }

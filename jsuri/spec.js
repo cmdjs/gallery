@@ -8,8 +8,5 @@ define(function(require) {
     it('should has host www.test.com', function() {
       expect(uri.host()).to.be.equal('www.test.com');
     });
-    it('should has query q=books', function() {
-      expect(uri.query()).to.be.equal('q=books');
-    });
   });
 });

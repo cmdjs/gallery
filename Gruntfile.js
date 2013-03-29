@@ -44,6 +44,7 @@ module.exports = function(grunt) {
       done();
     };
   });
+  grunt.registerTask('default', ['check']);
 
   function checkupdate(pkg, callback) {
     if (pkg.package) {
@@ -52,7 +53,7 @@ module.exports = function(grunt) {
         if (err) {
           callback(err);
         } else if (res.statusCode !== 200) {
-          callback('status code: ' + res.statusCode);
+          callback('status code: ' + res.statusCode + ' ' + pkg.package);
         } else {
           callback(null, body.version);
         }
@@ -74,7 +75,7 @@ module.exports = function(grunt) {
       if (err) {
         callback(err);
       } else if (res.statusCode !== 200) {
-        callback('status code: ' + res.statusCode);
+        callback('status code: ' + res.statusCode + ' ' + uri);
       } else {
 
         var names = body.map(function(tag) {
