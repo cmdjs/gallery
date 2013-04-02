@@ -1,7 +1,7 @@
 {
   "name": "mocha",
-  "root": "gallery",
-  "version": "1.7.3",
+  "family": "gallery",
+  "version": "1.8.2",
   "package": "https://raw.github.com/visionmedia/mocha/master/package.json",
   "description": "simple, flexible, fun test framework",
   "keywords": ["test", "bdd", "tdd", "tap"],
@@ -11,8 +11,7 @@
     "type": "git",
     "url": "git://github.com/visionmedia/mocha.git"
   },
-  "output": {
-    "mocha.js": ".",
-    "mocha.css": "https://raw.github.com/visionmedia/mocha/{{version}}/mocha.css"
+  "spm": {
+    "output": []
   }
 }
