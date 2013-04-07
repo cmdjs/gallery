@@ -1,6 +1,7 @@
 {
+  "family": "gallery",
   "name": "backbone",
-  "root": "gallery",
+  "version": "1.0.0",
   "description": "Give your JS App some Backbone with Models, Views, Collections, and Events.",
   "homepage": "http://backbonejs.org",
   "keywords": ["model", "view", "controller", "router", "server", "client", "browser"],
@@ -10,8 +11,7 @@
     "alias": {
       "$": "$",
       "underscore": "gallery/underscore/1.4.4/underscore"
-    }
-  },
-  "main": "backbone.js",
-  "version": "0.9.10"
+    },
+    "output": ["backbone.js"]
+  }
 }

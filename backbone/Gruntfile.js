@@ -22,51 +22,45 @@ module.exports = function(grunt) {
         }
       },
       src: {
-
         url: 'https://raw.github.com/documentcloud/backbone/<%= pkg.version %>/backbone.js',
-        name: 'backbone.js'
+        name: 'backbone-debug.js'
       },
       min: {
         url: 'https://raw.github.com/documentcloud/backbone/<%= pkg.version %>/backbone-min.js',
         name: 'backbone.js'
       }
     },
-
-    'spm-transport': {
+    transport: {
       options: {
-        pkg: pkg,
-        src: 'src',
-        dest: 'dist'
+        debug: false,
+        process: false
       },
-      src: ['src/backbone.js'],
+      debug: {
+        files: [{
+          cwd: 'src',
+          src: 'backbone-debug.js',
+          dest: 'dist'
+        }]
+      },
       min: {
-        src: ['src/backbone.js'],
         options: {
           uglify: {}
-        }
+        },
+        files: [{
+          cwd: 'src',
+          src: 'backbone.js',
+          dest: 'dist'
+        }]
       }
     },
-
-    'spm-beautify': {
-      options: {
-        src: 'dist',
-        dest: 'dist'
-      },
-      src: ['dist/backbone.js']
-    },
-
-    'spm-clean': {
-      all: ['src']
+    clean: {
+      src: ['src']
     }
   });
 
-  grunt.loadTasks('../_tasks/grunt-spm-build/tasks');
+  grunt.loadGlobalTasks('grunt-spm-build');
+  require('grunt-spm-build').initConfig(grunt, {pkg: pkg});
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.registerTask(
-    'build', [
-      'download',
-      'spm-transport:src', 'spm-beautify:src', 'spm-transport:min',
-      'spm-clean'
-    ]
-  );
+
+  grunt.registerTask('build', ['download', 'transport', 'newline', 'clean:src']);
 };
