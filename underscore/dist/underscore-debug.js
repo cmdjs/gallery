@@ -1090,4 +1090,4 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             }
         });
     }).call(this);
-})
+});

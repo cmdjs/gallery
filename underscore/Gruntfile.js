@@ -20,27 +20,41 @@ module.exports = function(grunt) {
       }
     },
 
-    'spm-transport': {
-      options: {
-        pkg: pkg,
-        src: 'src',
-        dest: 'dist'
+    transport: {
+      debug: {
+        options: {
+          debug: false,
+          process: false
+        },
+        files: [{
+          cwd: 'src',
+          src: 'underscore-debug.js',
+          dest: 'dist'
+        }]
       },
       min: {
-        src: ['src/underscore.js'],
         options: {
+          debug: false,
+          process: false,
           uglify: {}
-        }
-      },
-      debug: ['src/underscore-debug.js']
-    },
-
-    'spm-clean': {
-      all: ['src']
+        },
+        files: [{
+          cwd: 'src',
+          src: 'underscore.js',
+          dest: 'dist'
+        }]
+      }
     }
   });
 
-  grunt.loadTasks('../_tasks/grunt-spm-build/tasks');
+  require('grunt-spm-build').initConfig(grunt, {pkg: pkg});
+  grunt.loadGlobalTasks('grunt-spm-build');
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.registerTask('build', ['download', 'spm-transport', 'spm-clean']);
+  grunt.registerTask(
+    'build',
+    [
+      'download:debug', 'transport:debug',
+      'download:min', 'transport:min', 'newline'
+    ]
+  );
 };
