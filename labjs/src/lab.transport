@@ -1,6 +1,0 @@
-define(function(require) {
-
-  // @include https://raw.github.com/getify/LABjs/master/LAB.src.js
-
-  if (require) return $LAB.noConflict();
-});

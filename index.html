@@ -4,15 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
     <title>Gallery</title>
-    <link href="node_modules/mocha/mocha.css" type="text/css" rel="stylesheet" charset="utf-8">
-    <script src="node_modules/seajs/dist/sea.js"></script>
-    <script src="node_modules/mocha/mocha.js"></script>
-    <script src="node_modules/expect.js/expect.js"></script>
+    <link href="mocha/dist/mocha.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="mocha/dist/mocha.js"></script>
+    <script src="sea-modules/seajs/seajs/2.0.0/sea.js"></script>
+    <script src="sea-modules/jquery/jquery/1.7.2/jquery.js"></script>
     <script type="text/javascript">
       seajs.config({
         base: './',
         alias: {
-          '$': 'jquery/dist/jquery'
+          '$': 'jquery/jquery/1.7.2/jquery'
         },
         map: [
           function(url) {
@@ -26,16 +26,15 @@
   <body>
     <div id="mocha">Modules in Gallery</div>
     <script>
-      (function() {
+      seajs.use('gallery/expect/1.0.0/expect', function(expect) {
         mocha.setup('bdd');
 
         var modules = [
-          'async', 'backbone', 'expect', 'handlebars',
-          'jquery', 'jsuri', 'keymaster',
-          'labjs', 'less', 'marked', 'moment', 'mustache',
+          'backbone', 'expect', 'handlebars',
+          'jsuri', 'keymaster',
+          'moment', 'mustache',
           'sinon', 'store', 'swfobject',
-          'underscore', 'zepto', 'ztree',
-          'juicer', 'morris'
+          'underscore', 'zepto', 'ztree', 'morris'
         ]
 
         var specs = []
@@ -50,7 +49,7 @@
             mocha.run()
           }
         })
-      })()
+      });
     </script>
   </body>
 </html>

@@ -9,5 +9,11 @@
     "request": "*",
     "grunt-spm-build": "~0.2.0",
     "async": "*"
+  },
+  "spm": {
+    "engines": {
+      "jquery": "jquery/jquery/1.7.2/jquery",
+      "seajs": "seajs/seajs/2.0.0/sea"
+    }
   }
 }
