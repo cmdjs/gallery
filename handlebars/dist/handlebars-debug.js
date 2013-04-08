@@ -1,4 +1,4 @@
-define("gallery/handlebars/1.0.0/handlebars-debug", [], function(require, exports, module) {
+define("gallery/handlebars/1.0.1/handlebars-debug", [], function(require, exports, module) {
     /*
 
 Copyright (C) 2011 by Yehuda Katz
