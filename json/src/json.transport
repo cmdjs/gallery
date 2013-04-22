@@ -1,4 +1,0 @@
-define(function() {
-  // @include https://raw.github.com/douglascrockford/JSON-js/master/json2.js
-return this.JSON = this.JSON || JSON;
-});
