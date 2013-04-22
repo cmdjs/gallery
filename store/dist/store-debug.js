@@ -1,4 +1,4 @@
-define("gallery/store/1.3.6/store-debug", [], function(require, exports, module) {
+define("gallery/store/1.3.7/store-debug", [], function(require, exports, module) {
     (function() {
         var store = {}, win = window, doc = win.document, localStorageName = "localStorage", namespace = "__storejs__", storage;
         store.disabled = false;
@@ -140,10 +140,10 @@ define("gallery/store/1.3.6/store-debug", [], function(require, exports, module)
             });
             store.getAll = withIEStorage(function(storage) {
                 var attributes = storage.XMLDocument.documentElement.attributes;
-                storage.load(localStorageName);
                 var ret = {};
                 for (var i = 0, attr; attr = attributes[i]; ++i) {
-                    ret[attr] = store.get(attr);
+                    var key = ieKeyFix(attr.name);
+                    ret[attr.name] = store.deserialize(storage.getAttribute(key));
                 }
                 return ret;
             });
