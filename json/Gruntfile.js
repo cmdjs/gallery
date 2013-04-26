@@ -10,18 +10,11 @@ module.exports = function(grunt) {
       },
       src: {
         options: {
-          transform: function(code) {
-            code = code.replace(
-              /\(function\s*\(undefined\)\s*\{/,
-                'define(function(require, exports, module) {'
-            );
-            code = code.slice(0, code.indexOf('if (hasModule) {'))
-            code += 'module.exports = moment;\n});\n'
-            return code
-          }
+          header: 'define(function() {',
+          footer: 'return this.JSON = this.JSON || JSON; });'
         },
-        url: 'https://raw.github.com/timrwood/moment/<%= pkg.version %>/moment.js',
-        name: 'moment.js'
+        url: 'https://raw.github.com/douglascrockford/JSON-js/master/json2.js',
+        name: 'json.js'
       }
     }
   });

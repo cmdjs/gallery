@@ -22,8 +22,8 @@ module.exports = function(grunt) {
   });
 
 
-  require('grunt-spm-build').initConfig(grunt, {pkg: pkg});
+  grunt.loadGlobalTasks('spm-build');
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.loadGlobalTasks('grunt-spm-build');
-  grunt.registerTask('build', ['spm-build']);
+  grunt.util._.merge(grunt.config.data, require('spm-build').config);
+  grunt.registerTask('build', ['download', 'spm-build']);
 };

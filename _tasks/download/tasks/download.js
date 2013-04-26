@@ -64,4 +64,6 @@ module.exports = function(grunt) {
       done();
     });
   });
+
+  grunt.registerTask('spm-build', ['clean:build', 'transport:src', 'concat:js', 'copy:build', 'uglify:js', 'clean:dist', 'copy:dist', 'clean:build', 'spm-newline']);
 };
