@@ -1,6 +1,6 @@
 {
   "name": "scrollmonitor",
-  "root": "gallery",
+  "family": "gallery",
   "version": "1.0.0",
   "author": "Stu Kabakoff <stukabakoff@gmail.com>",
   "homepage": "https://github.com/sakabako/scrollMonitor",
@@ -23,7 +23,7 @@
     "scroll",
     "dom"
   ],
-  "output": {
-    "scrollmonitor.js": "."
+  "spm": {
+    "output": ["scrollmonitor.js"]
   }
 }
