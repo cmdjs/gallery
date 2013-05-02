@@ -1,6 +1,6 @@
 {
   "name": "jsuri",
-  "root": "gallery",
+  "family": "gallery",
   "version": "1.2.2",
   "package": "https://raw.github.com/derek-watson/jsUri/master/package.json",
   "author": "Derek Watson <watson@dcw.ca> (http://dcw.ca)",
@@ -25,7 +25,7 @@
   "engines": {
     "node": "*"
   },
-  "output": {
-    "jsuri.js": "."
+  "spm": {
+    "output": ["jsuri.js"]
   }
 }
