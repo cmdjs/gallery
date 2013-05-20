@@ -1,6 +1,6 @@
 {
   "name": "ztree",
-  "root": "gallery",
+  "family": "gallery",
   "version": "3.5.2",
   "package": "https://raw.github.com/swain/zTree/master/package.json",
   "description": "A jQuery tree plugin",
@@ -16,11 +16,13 @@
   "dependencies": {
     "$": "$"
   },
-  "output": {
-    "ztree.js": ["ztree.js"],
-    "core.js": ["core.js"],
-    "excheck.js": ["excheck.js"],
-    "exedit.js": ["exedit.js"],
-    "exhide.js": ["exhide.js"]
+  "spm": {
+    "output": [
+      "ztree.js",
+      "core.js",
+      "excheck.js",
+      "exedit.js",
+      "exhide.js"
+    ]
   }
 }

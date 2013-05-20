@@ -1,12 +1,12 @@
-define("gallery/scrollmonitor/1.0.0/scrollmonitor-debug", [ "jquery-debug" ], function(require, exports, module) {
+define("gallery/scrollmonitor/1.0.5/scrollmonitor-debug", [ "jquery-debug" ], function(require, exports, module) {
     (function(factory) {
         if (typeof define !== "undefined" && define.amd) {
             define([ "jquery" ], factory);
         } else if (typeof module !== "undefined" && module.exports) {
-            var jQuery = require("jquery-debug");
+            var $ = require("jquery-debug");
             module.exports = factory($);
         } else {
-            window.scrollMonitor = factory($);
+            window.scrollMonitor = factory(jQuery);
         }
     })(function($) {
         var exports = {};
@@ -21,6 +21,10 @@ define("gallery/scrollmonitor/1.0.0/scrollmonitor-debug", [ "jquery-debug" ], fu
         var LOCATIONCHANGE = "locationChange";
         var STATECHANGE = "stateChange";
         var eventTypes = [ VISIBILITYCHANGE, ENTERVIEWPORT, FULLYENTERVIEWPORT, EXITVIEWPORT, PARTIALLYEXITVIEWPORT, LOCATIONCHANGE, STATECHANGE ];
+        var defaultOffsets = {
+            top: 0,
+            bottom: 0
+        };
         exports.viewportTop;
         exports.viewportBottom;
         exports.documentHeight;
@@ -66,28 +70,25 @@ define("gallery/scrollmonitor/1.0.0/scrollmonitor-debug", [ "jquery-debug" ], fu
             var self = this;
             this.watchItem = watchItem;
             if (!offsets) {
-                this.offsets = {
-                    top: 0,
-                    bottom: 0
-                };
+                this.offsets = defaultOffsets;
             } else if (offsets === +offsets) {
                 this.offsets = {
                     top: offsets,
                     bottom: offsets
                 };
             } else {
-                this.offsets = offsets;
+                this.offsets = $.extend({}, defaultOffsets, offsets);
             }
             this.callbacks = {};
             // {callback: function, isOne: true }
-            eventTypes.forEach(function(type) {
-                self.callbacks[type] = [];
-            });
+            for (var i = 0, j = eventTypes.length; i < j; i++) {
+                self.callbacks[eventTypes[i]] = [];
+            }
             this.locked = false;
-            var wasInViewport = this.isInViewport;
-            var wasFullyInViewport = this.isFullyInViewport;
-            var wasAboveViewport = this.isAboveViewport;
-            var wasBelowViewport = this.isBelowViewport;
+            var wasInViewport;
+            var wasFullyInViewport;
+            var wasAboveViewport;
+            var wasBelowViewport;
             var listenerToTriggerListI;
             var listener;
             function triggerCallbackArray(listeners) {
@@ -182,6 +183,10 @@ define("gallery/scrollmonitor/1.0.0/scrollmonitor-debug", [ "jquery-debug" ], fu
             };
             this.recalculateLocation();
             this.update();
+            wasInViewport = this.isInViewport;
+            wasFullyInViewport = this.isFullyInViewport;
+            wasAboveViewport = this.isAboveViewport;
+            wasBelowViewport = this.isBelowViewport;
         }
         ElementWatcher.prototype = {
             on: function(event, callback, isOne) {
@@ -234,9 +239,9 @@ define("gallery/scrollmonitor/1.0.0/scrollmonitor-debug", [ "jquery-debug" ], fu
             destroy: function() {
                 var index = watchers.indexOf(this), self = this;
                 watchers.splice(index, 1);
-                eventTypes.forEach(function(type) {
-                    self.callbacks[type].length = 0;
-                });
+                for (var i = 0, j = eventTypes.length; i < j; i++) {
+                    self.callbacks[eventTypes[i]].length = 0;
+                }
             },
             // prevent recalculating the element location
             lock: function() {
@@ -246,11 +251,15 @@ define("gallery/scrollmonitor/1.0.0/scrollmonitor-debug", [ "jquery-debug" ], fu
                 this.locked = false;
             }
         };
-        eventTypes.forEach(function(type) {
-            ElementWatcher.prototype[type] = function(callback, isOne) {
+        var eventHandlerFactory = function(type) {
+            return function(callback, isOne) {
                 this.on.call(this, type, callback, isOne);
             };
-        });
+        };
+        for (var i = 0, j = eventTypes.length; i < j; i++) {
+            var type = eventTypes[i];
+            ElementWatcher.prototype[type] = eventHandlerFactory(type);
+        }
         calculateViewport();
         function scrollMonitorListener(event) {
             latestEvent = event;
@@ -259,11 +268,11 @@ define("gallery/scrollmonitor/1.0.0/scrollmonitor-debug", [ "jquery-debug" ], fu
         }
         $window.on("scroll", scrollMonitorListener);
         $window.on("resize", debouncedRecalcuateAndTrigger);
-        exports.beget = function(element, offsets) {
+        exports.beget = exports.create = function(element, offsets) {
             if (typeof element === "string") {
                 element = $(element)[0];
             }
-            if (element instanceof jQuery) {
+            if (element instanceof $) {
                 element = element[0];
             }
             var watcher = new ElementWatcher(element, offsets);

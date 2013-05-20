@@ -1,7 +1,7 @@
 {
   "name": "scrollmonitor",
-  "root": "gallery",
-  "version": "1.0.0",
+  "family": "gallery",
+  "version": "1.0.5",
   "author": "Stu Kabakoff <stukabakoff@gmail.com>",
   "homepage": "https://github.com/sakabako/scrollMonitor",
   "description": "A simple and fast API to monitor DOM elements as you scroll",
@@ -23,7 +23,7 @@
     "scroll",
     "dom"
   ],
-  "output": {
-    "scrollmonitor.js": "."
+  "spm": {
+    "output": ["scrollmonitor.js"]
   }
 }
