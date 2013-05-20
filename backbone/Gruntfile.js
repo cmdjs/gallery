@@ -52,15 +52,11 @@ module.exports = function(grunt) {
           dest: 'dist'
         }]
       }
-    },
-    clean: {
-      src: ['src']
     }
   });
 
-  grunt.loadGlobalTasks('grunt-spm-build');
-  require('grunt-spm-build').initConfig(grunt, {pkg: pkg});
   grunt.loadTasks('../_tasks/download/tasks');
+  grunt.util._.merge(grunt.config.data, require('spm-build').config);
 
-  grunt.registerTask('build', ['download', 'transport', 'newline', 'clean:src']);
+  grunt.registerTask('build', ['download', 'spm-build']);
 };

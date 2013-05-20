@@ -17,7 +17,6 @@ module.exports = function(grunt) {
       code,
       'define(function(require, exports, module) {',
       '  module.exports = sinon;',
-      '  delete window.sinon',
       '});',
     ].join('\n');
     grunt.file.write('src/sinon.js', code);
