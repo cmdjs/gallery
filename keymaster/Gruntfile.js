@@ -20,15 +20,16 @@ module.exports = function(grunt) {
         }
       },
       src: {
-        url: 'https://raw.github.com/lepture/keymaster/master/keymaster.js',
+        url: 'https://raw.github.com/madrobby/keymaster/master/keymaster.js',
         name: 'keymaster.js'
       }
     }
   });
 
-  require('grunt-spm-build').initConfig(grunt, {pkg: pkg});
+  grunt.loadGlobalTasks('spm-build');
+  grunt.util._.merge(grunt.config.data, require('spm-build').config);
 
-  grunt.loadGlobalTasks('grunt-spm-build');
   grunt.loadTasks('../_tasks/download/tasks');
   grunt.registerTask('build', ['download', 'spm-build']);
+
 };
