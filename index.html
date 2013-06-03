@@ -10,14 +10,17 @@
     <script src="sea-modules/jquery/jquery/1.7.2/jquery.js"></script>
     <script type="text/javascript">
       seajs.config({
-        base: './',
         alias: {
           '$': 'jquery/jquery/1.7.2/jquery'
         },
         map: [
           function(url) {
             var regex = /gallery\/(.*?)\/\d+\..*?\/(.*)$/
-            return url.replace(regex, '$1/dist/$2')
+            if (regex.test(url)) {
+              url = url.replace('sea-modules/', '');
+              return url.replace(regex, '$1/dist/$2')
+            }
+            return url;
           }
         ]
       });
