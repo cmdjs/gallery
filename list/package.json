@@ -1,0 +1,13 @@
+{
+  "family": "gallery",
+  "name": "list",
+  "version": "0.2.1",
+  "description": "A 3 KB cross-browser native JavaScript that makes your plain HTML lists super flexible, searchable, sortable and filterable.",
+  "author": "Jonny Action",
+  "homepage": "www.listjs.com",
+  "spm": {
+    "output": [
+      "list.js"
+    ]
+  }
+}
