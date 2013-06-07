@@ -5,6 +5,10 @@
   "description": "A 3 KB cross-browser native JavaScript that makes your plain HTML lists super flexible, searchable, sortable and filterable.",
   "author": "Jonny Action",
   "homepage": "http://www.listjs.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/javve/list"
+  },
   "spm": {
     "output": [
       "list.js"
