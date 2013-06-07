@@ -5,6 +5,8 @@ define(function(require) {
       expect(module.List).to.be.a('function');
       expect(module.List.prototype.templateEngines.standard).to.be.a('function');      
       expect(module.ListJsHelpers.getByClass).to.be.a('function');
+      expect(window.List).to.be(undefined);
+      expect(window.ListJsHelpers).to.be(undefined);
     });
   });
 });
