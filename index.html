@@ -15,7 +15,7 @@
         },
         map: [
           function(url) {
-            var regex = /gallery\/(.*?)\/\d+\..*?\/(.*)$/
+            var regex = /gallery\/([^\/]*?)\/\d+\..*?\/(.*)$/
             if (regex.test(url)) {
               url = url.replace('sea-modules/', '');
               return url.replace(regex, '$1/dist/$2')
@@ -37,7 +37,8 @@
           'jsuri', 'keymaster',
           'moment', 'mustache',
           'sinon', 'store', 'swfobject',
-          'underscore', 'zepto', 'ztree', 'morris'
+          'underscore', 'zepto', 'ztree', 'morris',
+          'mathjs', 'list'
         ]
 
         var specs = []
