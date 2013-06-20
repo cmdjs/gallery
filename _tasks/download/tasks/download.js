@@ -54,9 +54,9 @@ module.exports = function(grunt) {
         if (options.transform && typeof options.transform === 'function') {
           grunt.log.writeln('Transform code');
           code = options.transform(code);
-        } else if (options.header && options.footer ) {
+        } else if (options.header || options.footer ) {
           grunt.log.writeln('Add header and footer');
-          code = [options.header, code, options.footer].join('\n');
+          code = [options.header || '', code, options.footer || ''].join('\n');
         }
         grunt.file.write(path.join(options.dest, data.name), code);
         grunt.log.ok();

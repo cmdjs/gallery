@@ -10,8 +10,11 @@ module.exports = function(grunt) {
       },
       src: {
         options: {
-          header: 'define(function() {',
-          footer: 'return this.JSON = this.JSON || JSON; });'
+          header: '',
+          footer: [
+            'define(function() {',
+            'return window.JSON; });'
+          ].join('\n')
         },
         url: 'https://raw.github.com/douglascrockford/JSON-js/master/json2.js',
         name: 'json.js'
@@ -23,5 +26,5 @@ module.exports = function(grunt) {
   grunt.util._.merge(grunt.config.data, require('spm-build').config);
 
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.registerTask('build', ['download', 'spm-build']);
+  grunt.registerTask('wrap', ['download', 'spm-build']);
 };
