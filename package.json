@@ -12,7 +12,7 @@
   "spm": {
     "engines": {
       "jquery": "jquery/jquery/1.7.2/jquery",
-      "seajs": "seajs/seajs/2.0.0/sea"
+      "seajs": "seajs/seajs/2.1.1/sea"
     }
   }
 }
