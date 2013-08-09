@@ -8,15 +8,15 @@
     "author": "Christian Johansen",
     "repository": {
         "type": "git",
-        "url": "http://github.com/cjohansen/Sinon.JS.git"
+        "url": "https://github.com/cjohansen/Sinon.JS.git"
     },
     "bugs": {
         "mail": "christian@cjohansen.no",
-        "url": "http://github.com/cjohansen/Sinon.JS/issues"
+        "url": "https://github.com/cjohansen/Sinon.JS/issues"
     },
     "licenses": [
         { "type": "BSD",
-          "url": "http://github.com/cjohansen/Sinon.JS/blob/master/LICENSE"
+          "url": "https://github.com/cjohansen/Sinon.JS/blob/master/LICENSE"
         }
     ],
     "scripts": {
