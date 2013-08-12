@@ -80,7 +80,7 @@ package.json 各项含义参考 [这里](http://docs.spmjs.org/en/package), 一�
 ```
 
 **注意** 有些信息可以直接在模块的原仓库地址中的某些文件中找到, 如: bower.json, xxx.jquery.json, component.json, 甚至有完整的 package.json,
-另外, 需要添加我们特有的 spm 字段. 如果没有依赖 jquery, 则 spm.alias 下的 $ 可以去掉
+另外, 需要添加我们特有的 spm 字段. 如果没有依赖 jquery, 则 spm.alias 下的 ``$`` 可以去掉
 
 #### 编写 Gruntfile.js
 
@@ -143,8 +143,9 @@ module.exports = function(grunt) {
 
 写完之后, 就可以执行 grunt, 下载对应文件并按照需要修改代码.
 下载的文件保存在 src/ 下, 可打开看下各个文件是否正确.
-这个过程, 主要是做了从源仓库中下载 js/css 文件, 并对下载下来的代码进行处理, 比如 js 文件, 可以设置 transform 封装成 define(factory) 的形式.
-transform 中的函数参数 code 即为下载下来模块的代码, 你可以根据需要替换/添加其中的特殊代码.
+
+这个过程, 主要是做了从源仓库中下载 js/css 文件, 并对下载下来的代码进行处理, 比如 js 文件, 可以设置 transform 封装成 ``define(factory)`` 的形式.
+transform 中的函数参数 ``code`` 即为下载下来模块的代码, 你可以根据需要替换/添加其中的特殊代码.
 
 #### 编写简单的测试用例 spec.js
 
