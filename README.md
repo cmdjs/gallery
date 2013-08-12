@@ -100,7 +100,6 @@ module.exports = function(grunt) {
                         // - 模块已有依赖的库, 如 jquery, 需要统一 require('$')
                         // - 如果模块有返回的话, 需要在末尾通过 module.exports 方式返回
                         // - 有些模块内部有判断 amd / cmd 的逻辑的话, 则无须包裹 define, 直接采用它的即可, 例如 jquery/jquery
-                        //
                         return [
                             'define(function(require, exports, module) {',
                             'var previousJQuery = this.jQuery;',
