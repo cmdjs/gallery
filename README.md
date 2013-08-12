@@ -10,10 +10,12 @@ npm install grunt-cli -g
 npm install spm -g -f
 ```
 
-#### 克隆 cmdjs/gallery 仓库
+#### Fork cmdjs/gallery 仓库
+
+Fork [cmdjs/gallery](https://github.com/cmdjs/gallery) 到自己的仓库中, 然后把 fork 后的仓库克隆到本地, 如:
 
 ```
-git clone git@github.com:cmdjs/gallery.git  // 若没有写权限, 找 @afc163
+git clone git@github.com:lizzie/gallery.git
 ```
 
 cmdjs 下的 jquery 仓库, 步骤是和 gallery 类似的.
@@ -141,6 +143,8 @@ module.exports = function(grunt) {
 
 写完之后, 就可以执行 grunt, 下载对应文件并按照需要修改代码.
 下载的文件保存在 src/ 下, 可打开看下各个文件是否正确.
+这个过程, 主要是做了从源仓库中下载 js/css 文件, 并对下载下来的代码进行处理, 比如 js 文件, 可以设置 transform 封装成 define(factory) 的形式.
+transform 中的函数参数 code 即为下载下来模块的代码, 你可以根据需要替换/添加其中的特殊代码.
 
 #### 编写简单的测试用例 spec.js
 
@@ -171,22 +175,34 @@ define(function(require) {
 
 ```
 cd highcharts
+spm install
 spm build
 ```
 
-成功之后, 在 dist/ 下就是编译后的文件. 只需看下各文件是否都已生成, 确保没有遗漏文件.
-
+编译好的文件在 dist/ 目录. 只需看下各文件是否都已生成, 确保没有遗漏文件.
+这步会根据对 src/ 下的文件, 进行 concat / transport 处理, 并生成源码和压缩后的代码. 具体请参考 [spm](http://docs.spmjs.org) 的文档
 
 ### 发布及取消发布
+
+#### 发布至源
 
 ```
 spm build            // 发布之前先编译一次
 spm publish -s spmjs // 发布当前版本
-spm publish -s spmjs -f     // 强制发布源上已有版本
+spm publish -s spmjs -f     // 强制发布源上已有版本, 这里需要有发布权限, 没有权限会给出错误提示, 申请权限请找 @lepture
 
 spm unpublish jquery/highcharts@3.0.4   // 从源上删除某个版本的模块
 spm unpublish jquery/highcharts          // 从源上伤处某个模块的所有版本
 ```
+
+#### 提交至 github
+
+```
+git commit -a -m "A: add highcharts"
+git push // 之后到 cmdjs/gallery 上提 pull request
+```
+
+**注意:** src/ 和 dist/ 目录都不需要提交至仓库中. 只需要 package.json, Gruntfile.js 和 spec.js.
 
 ### 使用
 
