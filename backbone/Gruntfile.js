@@ -17,7 +17,7 @@ module.exports = function(grunt) {
             code,
             "this._ = previousUnderscore;",
             "this.jQuery = previousJQuery;",
-            "});",
+            "});"
           ].join('\n');
         }
       },
