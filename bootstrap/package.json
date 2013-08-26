@@ -1,0 +1,32 @@
+{
+    "family": "gallery",
+    "name": "bootstrap",
+    "version": "3.0.0",
+    "keywords": ["bootstrap", "css"],
+    "author": "Twitter Inc.",
+    "description": "Sleek, intuitive, and powerful front-end framework for faster and easier web development.",
+    "homepage": "https://github.com/twbs/bootstrap",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/twbs/bootstrap"
+    },
+    "licenses": [
+        {
+            "type": "Apache-2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+        }
+    ],
+    "spm": {
+        "alias": {
+            "$": "$"
+        },
+        "output": [
+            "bootstrap.js",
+            "bootstrap.css",
+            "fonts/glyphicons-halflings-regular.eot",
+            "fonts/glyphicons-halflings-regular.ttf",
+            "fonts/glyphicons-halflings-regular.svg",
+            "fonts/glyphicons-halflings-regular.woff"
+        ]
+    }
+}
