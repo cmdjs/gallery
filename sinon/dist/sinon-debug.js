@@ -3469,5 +3469,4 @@ var sinon = function() {
 
 define("gallery/sinon/1.6.0/sinon-debug", [], function(require, exports, module) {
     module.exports = sinon;
-    delete window.sinon;
 });
