@@ -23,5 +23,15 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/grunt coffee mocha"
+  },
+  "spm": {
+    "alias": {
+      "$": "$",
+      "raphael": "gallery/raphael/2.1.0/raphael"
+    },
+    "output": [
+      "morris.js",
+      "morris.css"
+    ]
   }
 }

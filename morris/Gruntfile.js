@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 
     download: {
       options: {
-        dest: 'dist',
+        dest: 'src',
       },
       src: {
         options: {
@@ -28,13 +28,13 @@ module.exports = function(grunt) {
           }
         },
         url: 'https://raw.github.com/oesmith/morris.js/<%= pkg.version %>/morris.js',
-        name: 'morris-debug.js'
+        name: 'morris.js'
       },
 
       css: {
         url: 'https://raw.github.com/oesmith/morris.js/<%= pkg.version %>/morris.css',
         name: 'morris.css'
-      },
+      }/*,
 
       min: {
         options: {
@@ -44,10 +44,10 @@ module.exports = function(grunt) {
         },
         url: 'https://raw.github.com/oesmith/morris.js/<%= pkg.version %>/morris.min.js',
         name: 'morris.js'
-      }
+      }*/
     }
   });
 
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.registerTask('build', ['download']);
+  grunt.registerTask('default', ['download']);
 };
