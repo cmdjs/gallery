@@ -1,5 +1,5 @@
-define("gallery/morris/0.4.3/morris-debug", [ "$", "gallery/raphael/2.1.0/raphael" ], function(require, exports, module) {
-    var jQuery = require("$"), Raphael = require("gallery/raphael/2.1.0/raphael");
+define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/raphael-debug" ], function(require, exports, module) {
+    var jQuery = require("$-debug"), Raphael = require("gallery/raphael/2.1.0/raphael-debug");
     (function() {
         var $, Morris, minutesSpecHelper, secondsSpecHelper, __slice = [].slice, __hasProp = {}.hasOwnProperty, __extends = function(child, parent) {
             for (var key in parent) {
