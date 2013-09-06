@@ -18,6 +18,12 @@ Fork [cmdjs/gallery](https://github.com/cmdjs/gallery) 到自己的仓库中, �
 git clone git@github.com:lizzie/gallery.git
 ```
 
+然后安装依赖模块。
+
+```
+npm install
+```
+
 cmdjs 下的 jquery 仓库, 步骤是和 gallery 类似的.
 
 ### 迁移 CMD 模块
