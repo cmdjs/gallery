@@ -18,13 +18,8 @@
       "$": "$"
     },
     "output": [
-      "all.js",
-      "core.js",
-      "excheck.js",
-      "exedit.js",
-      "exhide.js",
-
-      "zTreeStyle.css"
+      "ztree.js",
+      "ztree.css"
     ]
   }
 }

@@ -22,7 +22,7 @@ module.exports = function(grunt) {
                 url: 'https://raw.github.com/zTree/zTree_v3/v<%= pkg.version%>/js/jquery.ztree.all-3.5.js',
                 name: 'all.js'
             },
-            core: {
+            /*core: {
                 options: {
                     transform: function(code) {
                         return [
@@ -77,7 +77,7 @@ module.exports = function(grunt) {
                 },
                 url: 'https://raw.github.com/zTree/zTree_v3/v<%= pkg.version%>/js/jquery.ztree.exhide-3.5.js',
                 name: 'exhide.js'
-            },
+            },*/
             css: {
                 options: {
                     transform: function(code) {
@@ -90,7 +90,7 @@ module.exports = function(grunt) {
                     }
                 },
                 url: 'https://raw.github.com/zTree/zTree_v3/v<%= pkg.version%>/css/zTreeStyle/zTreeStyle.css',
-                name: "zTreeStyle.css"
+                name: "ztree.css"
             }
         }
     });
