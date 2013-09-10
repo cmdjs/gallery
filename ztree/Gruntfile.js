@@ -14,13 +14,14 @@ module.exports = function(grunt) {
                         return [
                             'define(function(require, exports, module) {',
                             "var jQuery = require('$');",
+                            "require('./ztree.css');",
                             code,
                             "});"
                         ].join('\n');
                     }
                 },
                 url: 'https://raw.github.com/zTree/zTree_v3/v<%= pkg.version%>/js/jquery.ztree.all-3.5.js',
-                name: 'all.js'
+                name: 'ztree.js'
             },
             /*core: {
                 options: {
