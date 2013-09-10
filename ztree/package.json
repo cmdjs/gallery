@@ -1,28 +1,30 @@
 {
   "name": "ztree",
   "family": "gallery",
-  "version": "3.5.2",
-  "package": "https://raw.github.com/swain/zTree/master/package.json",
+  "version": "3.5.14",
+  "package": "https://raw.github.com/zTree/zTree_v3/master/zTree.v3.jquery.json",
   "description": "A jQuery tree plugin",
-  "author": "zTree",
+  "author": "Zhang QiGang <hunter.z@263.net>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/swain/zTree"
+    "url": "https://github.com/zTree/zTree_v3"
   },
-  "homepage": "https://github.com/swain/zTree",
+  "homepage": "https://github.com/zTree/zTree_v3",
   "bugs": {
-    "url": "https://github.com/swain/zTree/issues"
-  },
-  "dependencies": {
-    "$": "$"
+    "url": "https://github.com/zTree/zTree_v3/issues"
   },
   "spm": {
+    "alias": {
+      "$": "$"
+    },
     "output": [
-      "ztree.js",
+      "all.js",
       "core.js",
       "excheck.js",
       "exedit.js",
-      "exhide.js"
+      "exhide.js",
+
+      "zTreeStyle.css"
     ]
   }
 }
