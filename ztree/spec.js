@@ -1,5 +1,5 @@
 define(function(require) {
-  require('./dist/all');
+  require('./dist/ztree');
   var module = require('$');
   describe('jquery ztree', function() {
     it('should has zTree object', function() {
