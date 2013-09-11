@@ -8,13 +8,14 @@ module.exports = function(grunt) {
       options: {
         dest: 'dist'
       },
-      src: {
+      debug: {
         options: {
           transform: function(code) {
             return [
-                code.replace('typeof define != "undefined"', 'typeof define != "undefined" && !define.cmd'),
-                'define("gallery/raphael/'+pkg.version+'/raphael-debug", function(require, exports, module) {',
-                "module.exports = window.Raphael;",
+                'define("gallery/raphael/'+pkg.version+'/raphael-debug", [], function() {',
+                'var define;',
+                code,
+                "return window.Raphael;",
                 "});"
             ].join('\n');
           }
@@ -26,9 +27,10 @@ module.exports = function(grunt) {
         options: {
           transform: function(code) {
             return [
-                code.replace('typeof define != "undefined"', 'typeof define != "undefined" && !define.cmd'),
-                'define("gallery/raphael/'+pkg.version+'/raphael", function(require, exports, module) {',
-                "module.exports = window.Raphael;",
+                'define("gallery/raphael/'+pkg.version+'/raphael", [], function() {',
+                'var define;',
+                code,
+                "return window.Raphael;",
                 "});"
             ].join('\n');
           }
