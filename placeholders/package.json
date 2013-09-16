@@ -1,0 +1,21 @@
+{
+  "family": "gallery",
+  "name": "placeholders",
+  "version": "2.1.0",
+  "author": "James Allardice <admin@jamesallardice.com>",
+  "description": "A JavaScript polyfill for the HTML5 placeholder attribute",
+  "homepage": "http://jamesallardice.github.io/Placeholders.js/",
+  "devDependencies": {
+    "grunt": "0.4.x",
+    "grunt-contrib-jshint": "0.3.x",
+    "grunt-contrib-concat": "0.1.x",
+    "grunt-contrib-uglify": "0.2.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesallardice/Placeholders.js"
+  },
+  "spm": {
+    "output": ["placeholders.js"]
+  }
+}
