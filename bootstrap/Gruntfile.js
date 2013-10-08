@@ -39,14 +39,14 @@ module.exports = function(grunt) {
                 options: {
                    dest: 'src/fonts'
                 },
-                url: 'https://raw.github.com/twbs/bootstrap/v<%= pkg.version%>/dist/fonts/glyphicons-halflings-regular.eot',
+                url: 'https://github.com/twbs/bootstrap/raw/master/fonts/glyphicons-halflings-regular.eot',
                 name: 'glyphicons-halflings-regular.eot'
             },
             fonts2: {
                 options: {
                    dest: 'src/fonts'
                 },
-                url: 'https://raw.github.com/twbs/bootstrap/v<%= pkg.version%>/dist/fonts/glyphicons-halflings-regular.ttf',
+                url: 'https://github.com/twbs/bootstrap/raw/master/fonts/glyphicons-halflings-regular.ttf',
                 name: 'glyphicons-halflings-regular.ttf'
             },
             fonts3: {
