@@ -18,7 +18,8 @@
       "$": "$"
     },
     "output": [
-      "ztree.js"
+      "ztree.js",
+      "exhide.js"
     ]
   }
 }

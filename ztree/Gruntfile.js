@@ -23,6 +23,21 @@ module.exports = function(grunt) {
         url: 'https://raw.github.com/zTree/zTree_v3/v<%= pkg.version%>/js/jquery.ztree.all-3.5.js',
         name: 'ztree.js'
       },
+      exhide: {
+        options: {
+          transform: function(code) {
+            return [
+                'define(function(require, exports, module) {',
+                'var $ = jQuery = require("jQuery");',
+                code,
+                "return jQuery;",
+                "});"
+            ].join('\n');
+          }
+        },
+        url: 'https://raw.github.com/zTree/zTree_v3/v<%= pkg.version%>/js/jquery.ztree.exhide-3.5.js',
+        name: 'exhide.js'
+      },
       css: {
         options: {
           transform: function(code) {
