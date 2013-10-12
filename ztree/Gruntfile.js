@@ -13,8 +13,8 @@ module.exports = function(grunt) {
           transform: function(code) {
             return [
                 'define(function(require, exports, module) {',
-                "var jQuery = require('$');",
-                "require('./ztree.css');",
+                'var jQuery = require("$");',
+                'require("./ztree.css");',
                 code,
                 "});"
             ].join('\n');
