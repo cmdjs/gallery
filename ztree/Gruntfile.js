@@ -28,9 +28,8 @@ module.exports = function(grunt) {
           transform: function(code) {
             return [
                 'define(function(require, exports, module) {',
-                'var $ = jQuery = require("jQuery");',
+                'var jQuery = require("$");',
                 code,
-                "return jQuery;",
                 "});"
             ].join('\n');
           }

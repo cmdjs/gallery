@@ -1,5 +1,5 @@
-define("gallery/ztree/3.5.14/exhide-debug", [ "jQuery-debug" ], function(require, exports, module) {
-    var $ = jQuery = require("jQuery-debug");
+define("gallery/ztree/3.5.14/exhide-debug", [ "$-debug" ], function(require, exports, module) {
+    var jQuery = require("$-debug");
     /*
  * JQuery zTree exHideNodes 3.5.14
  * http://zTree.me/
@@ -350,5 +350,4 @@ define("gallery/ztree/3.5.14/exhide-debug", [ "jQuery-debug" ], function(require
             };
         }
     })(jQuery);
-    return jQuery;
 });
