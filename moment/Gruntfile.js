@@ -15,7 +15,7 @@ module.exports = function(grunt) {
               /\(function\s*\(undefined\)\s*\{/,
                 'define(function(require, exports, module) {'
             );
-            code = code.slice(0, code.indexOf('if (hasModule) {'))
+            code = code.slice(0, code.indexOf('function makeGlobal() {'))
             code += 'module.exports = moment;\n});\n'
             return code
           }

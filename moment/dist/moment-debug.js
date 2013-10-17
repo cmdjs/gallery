@@ -1783,15 +1783,5 @@ define("gallery/moment/2.3.1/moment-debug", [], function(require, exports, modul
     /************************************
         Exposing Moment
     ************************************/
-    function makeGlobal() {
-        /*global ender:false */
-        if (typeof ender === "undefined") {
-            // here, `this` means `window` in the browser, or `global` on the server
-            // add `moment` as a global object via a string identifier,
-            // for Closure Compiler "advanced" mode
-            this["moment"] = moment;
-        }
-    }
-    // CommonJS module is defined
     module.exports = moment;
 });
