@@ -20,7 +20,7 @@ module.exports = function(grunt) {
             return code
           }
         },
-        url: 'https://raw.github.com/timrwood/moment/<%= pkg.version %>/moment.js',
+        url: 'https://raw.github.com/moment/moment/<%= pkg.version %>/moment.js',
         name: 'moment.js'
       }
     }
