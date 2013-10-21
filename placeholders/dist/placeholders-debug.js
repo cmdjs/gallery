@@ -1,4 +1,4 @@
-define("gallery/placeholders/2.1.0/placeholders-debug", [ "./utils-debug" ], function(require, exports, module) {
+define("gallery/placeholders/3.0.0/placeholders-debug", [ "./utils-debug" ], function(require, exports, module) {
     require("./utils-debug");
     (function(global) {
         "use strict";
@@ -19,17 +19,23 @@ define("gallery/placeholders/2.1.0/placeholders-debug", [ "./utils-debug" ], fun
         46 ], // Styling variables
         placeholderStyleColor = "#ccc", placeholderClassName = "placeholdersjs", classNameRegExp = new RegExp("(?:^|\\s)" + placeholderClassName + "(?!\\S)"), // These will hold references to all elements that can be affected. NodeList objects are live, so we only need to get those references once
         inputs, textareas, // The various data-* attributes used by the polyfill
-        ATTR_CURRENT_VAL = "data-placeholder-value", ATTR_ACTIVE = "data-placeholder-active", ATTR_INPUT_TYPE = "data-placeholder-type", ATTR_FORM_HANDLED = "data-placeholder-submit", ATTR_EVENTS_BOUND = "data-placeholder-bound", ATTR_OPTION_FOCUS = "data-placeholder-focus", ATTR_OPTION_LIVE = "data-placeholder-live", // Various other variables used throughout the rest of the script
+        ATTR_CURRENT_VAL = "data-placeholder-value", ATTR_ACTIVE = "data-placeholder-active", ATTR_INPUT_TYPE = "data-placeholder-type", ATTR_FORM_HANDLED = "data-placeholder-submit", ATTR_EVENTS_BOUND = "data-placeholder-bound", ATTR_OPTION_FOCUS = "data-placeholder-focus", ATTR_OPTION_LIVE = "data-placeholder-live", ATTR_MAXLENGTH = "data-placeholder-maxlength", // Various other variables used throughout the rest of the script
         test = document.createElement("input"), head = document.getElementsByTagName("head")[0], root = document.documentElement, Placeholders = global.Placeholders, Utils = Placeholders.Utils, hideOnInput, liveUpdates, keydownVal, styleElem, styleRules, placeholder, timer, form, elem, len, i;
         // No-op (used in place of public methods when native support is detected)
         function noop() {}
         // Hide the placeholder value on a single element. Returns true if the placeholder was hidden and false if it was not (because it wasn't visible in the first place)
-        function hidePlaceholder(elem) {
-            var type;
-            if (elem.value === elem.getAttribute(ATTR_CURRENT_VAL) && elem.getAttribute(ATTR_ACTIVE) === "true") {
-                elem.setAttribute(ATTR_ACTIVE, "false");
-                elem.value = "";
+        function hidePlaceholder(elem, keydownValue) {
+            var type, maxLength, valueChanged = !!keydownValue && elem.value !== keydownValue, isPlaceholderValue = elem.value === elem.getAttribute(ATTR_CURRENT_VAL);
+            if ((valueChanged || isPlaceholderValue) && elem.getAttribute(ATTR_ACTIVE) === "true") {
+                elem.removeAttribute(ATTR_ACTIVE);
+                elem.value = elem.value.replace(elem.getAttribute(ATTR_CURRENT_VAL), "");
                 elem.className = elem.className.replace(classNameRegExp, "");
+                // Restore the maxlength value
+                maxLength = elem.getAttribute(ATTR_MAXLENGTH);
+                if (maxLength) {
+                    elem.setAttribute("maxLength", maxLength);
+                    elem.removeAttribute(ATTR_MAXLENGTH);
+                }
                 // If the polyfill has changed the type of the element we need to change it back
                 type = elem.getAttribute(ATTR_INPUT_TYPE);
                 if (type) {
@@ -41,11 +47,17 @@ define("gallery/placeholders/2.1.0/placeholders-debug", [ "./utils-debug" ], fun
         }
         // Show the placeholder value on a single element. Returns true if the placeholder was shown and false if it was not (because it was already visible)
         function showPlaceholder(elem) {
-            var type, val = elem.getAttribute(ATTR_CURRENT_VAL);
+            var type, maxLength, val = elem.getAttribute(ATTR_CURRENT_VAL);
             if (elem.value === "" && val) {
                 elem.setAttribute(ATTR_ACTIVE, "true");
                 elem.value = val;
                 elem.className += " " + placeholderClassName;
+                // Store and remove the maxlength value
+                maxLength = elem.getAttribute(ATTR_MAXLENGTH);
+                if (!maxLength) {
+                    elem.setAttribute(ATTR_MAXLENGTH, elem.maxLength);
+                    elem.removeAttribute("maxLength");
+                }
                 // If the type of element needs to change, change it (e.g. password inputs)
                 type = elem.getAttribute(ATTR_INPUT_TYPE);
                 if (type) {
@@ -119,18 +131,7 @@ define("gallery/placeholders/2.1.0/placeholders-debug", [ "./utils-debug" ], fun
         }
         function makeKeyupHandler(elem) {
             return function() {
-                var type;
-                if (elem.getAttribute(ATTR_ACTIVE) === "true" && elem.value !== keydownVal) {
-                    // Remove the placeholder
-                    elem.className = elem.className.replace(classNameRegExp, "");
-                    elem.value = elem.value.replace(elem.getAttribute(ATTR_CURRENT_VAL), "");
-                    elem.setAttribute(ATTR_ACTIVE, false);
-                    // If the type of element needs to change, change it (e.g. password inputs)
-                    type = elem.getAttribute(ATTR_INPUT_TYPE);
-                    if (type) {
-                        elem.type = type;
-                    }
-                }
+                hidePlaceholder(elem, keydownVal);
                 // If the element is now empty we need to show the placeholder
                 if (elem.value === "") {
                     elem.blur();
@@ -175,8 +176,10 @@ define("gallery/placeholders/2.1.0/placeholders-debug", [ "./utils-debug" ], fun
             // Remember that we've bound event handlers to this element
             elem.setAttribute(ATTR_EVENTS_BOUND, "true");
             elem.setAttribute(ATTR_CURRENT_VAL, placeholder);
-            // If the element doesn't have a value, set it to the placeholder string
-            showPlaceholder(elem);
+            // If the element doesn't have a value and is not focussed, set it to the placeholder string
+            if (hideOnInput || elem !== document.activeElement) {
+                showPlaceholder(elem);
+            }
         }
         Placeholders.nativeSupport = test.placeholder !== void 0;
         if (!Placeholders.nativeSupport) {
@@ -240,6 +243,9 @@ define("gallery/placeholders/2.1.0/placeholders-debug", [ "./utils-debug" ], fun
                                 elem.setAttribute(ATTR_CURRENT_VAL, placeholder);
                             }
                         }
+                    } else if (elem.getAttribute(ATTR_ACTIVE)) {
+                        hidePlaceholder(elem);
+                        elem.removeAttribute(ATTR_CURRENT_VAL);
                     }
                 }
                 // If live updates are not enabled cancel the timer
@@ -260,7 +266,7 @@ define("gallery/placeholders/2.1.0/placeholders-debug", [ "./utils-debug" ], fun
     }
 });
 
-define("gallery/placeholders/2.1.0/utils-debug", [], function(require, exports, module) {
+define("gallery/placeholders/3.0.0/utils-debug", [], function(require, exports, module) {
     /* 
  * The MIT License
  *

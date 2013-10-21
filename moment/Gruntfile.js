@@ -15,12 +15,12 @@ module.exports = function(grunt) {
               /\(function\s*\(undefined\)\s*\{/,
                 'define(function(require, exports, module) {'
             );
-            code = code.slice(0, code.indexOf('if (hasModule) {'))
+            code = code.slice(0, code.indexOf('function makeGlobal() {'))
             code += 'module.exports = moment;\n});\n'
             return code
           }
         },
-        url: 'https://raw.github.com/timrwood/moment/<%= pkg.version %>/moment.js',
+        url: 'https://raw.github.com/moment/moment/<%= pkg.version %>/moment.js',
         name: 'moment.js'
       }
     }
