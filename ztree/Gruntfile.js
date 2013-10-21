@@ -55,9 +55,12 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadGlobalTasks('spm-build');
-  grunt.util._.merge(grunt.config.data, require('spm-build').config);
+  //grunt.loadGlobalTasks('spm-build');
+  //grunt.util._.merge(grunt.config.data, require('spm-build').config);
 
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.registerTask('build', ['download', 'spm-build']);
+  //grunt.registerTask('build', ['download', 'spm-build']);
+  grunt.registerTask('default', ['spm-build']);
+
+    // spmjs 上的和 dist 不一样. inline 了 ztree.css
 };
