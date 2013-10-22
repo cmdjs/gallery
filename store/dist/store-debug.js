@@ -1,6 +1,7 @@
-define("gallery/store/1.3.7/store-debug", [], function(require, exports, module) {
-    (function() {
-        var store = {}, win = window, doc = win.document, localStorageName = "localStorage", namespace = "__storejs__", storage;
+define("gallery/store/1.3.14/store-debug", [ "gallery/json/1.0.3/json-debug" ], function(require, exports, module) {
+    require("gallery/json/1.0.3/json-debug");
+    (function(win) {
+        var store = {}, doc = win.document, localStorageName = "localStorage", storage;
         store.disabled = false;
         store.set = function(key, value) {};
         store.get = function(key) {};
@@ -19,6 +20,7 @@ define("gallery/store/1.3.7/store-debug", [], function(require, exports, module)
             store.set(key, val);
         };
         store.getAll = function() {};
+        store.forEach = function() {};
         store.serialize = function(value) {
             return JSON.stringify(value);
         };
@@ -62,11 +64,16 @@ define("gallery/store/1.3.7/store-debug", [], function(require, exports, module)
             };
             store.getAll = function() {
                 var ret = {};
-                for (var i = 0; i < storage.length; ++i) {
-                    var key = storage.key(i);
-                    ret[key] = store.get(key);
-                }
+                store.forEach(function(key, val) {
+                    ret[key] = val;
+                });
                 return ret;
+            };
+            store.forEach = function(callback) {
+                for (var i = 0; i < storage.length; i++) {
+                    var key = storage.key(i);
+                    callback(key, store.get(key));
+                }
             };
         } else if (doc.documentElement.addBehavior) {
             var storageOwner, storageContainer;
@@ -83,7 +90,7 @@ define("gallery/store/1.3.7/store-debug", [], function(require, exports, module)
             try {
                 storageContainer = new ActiveXObject("htmlfile");
                 storageContainer.open();
-                storageContainer.write("<s" + "cript>document.w=window</s" + 'cript><iframe src="/favicon.ico"></frame>');
+                storageContainer.write("<s" + "cript>document.w=window</s" + 'cript><iframe src="/favicon.ico"></iframe>');
                 storageContainer.close();
                 storageOwner = storageContainer.w.frames[0].document;
                 storage = storageOwner.createElement("div");
@@ -138,32 +145,37 @@ define("gallery/store/1.3.7/store-debug", [], function(require, exports, module)
                 }
                 storage.save(localStorageName);
             });
-            store.getAll = withIEStorage(function(storage) {
-                var attributes = storage.XMLDocument.documentElement.attributes;
+            store.getAll = function(storage) {
                 var ret = {};
-                for (var i = 0, attr; attr = attributes[i]; ++i) {
-                    var key = ieKeyFix(attr.name);
-                    ret[attr.name] = store.deserialize(storage.getAttribute(key));
-                }
+                store.forEach(function(key, val) {
+                    ret[key] = val;
+                });
                 return ret;
+            };
+            store.forEach = withIEStorage(function(storage, callback) {
+                var attributes = storage.XMLDocument.documentElement.attributes;
+                for (var i = 0, attr; attr = attributes[i]; ++i) {
+                    callback(attr.name, store.deserialize(storage.getAttribute(attr.name)));
+                }
             });
         }
         try {
-            store.set(namespace, namespace);
-            if (store.get(namespace) != namespace) {
+            var testKey = "__storejs__";
+            store.set(testKey, testKey);
+            if (store.get(testKey) != testKey) {
                 store.disabled = true;
             }
-            store.remove(namespace);
+            store.remove(testKey);
         } catch (e) {
             store.disabled = true;
         }
         store.enabled = !store.disabled;
-        if (typeof module != "undefined" && typeof module != "function") {
+        if (typeof module != "undefined" && module.exports) {
             module.exports = store;
         } else if (typeof define === "function" && define.amd) {
             define(store);
         } else {
-            this.store = store;
+            win.store = store;
         }
-    })();
+    })(this.window || global);
 });

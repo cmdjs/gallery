@@ -19,7 +19,8 @@
     },
     "output": [
       "ztree.js",
-      "exhide.js"
+      "ztree.css",
+      "ztree-exhide.js"
     ]
   }
 }
