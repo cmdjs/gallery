@@ -17,6 +17,9 @@ module.exports = function(grunt) {
         }
     });
 
+    grunt.loadGlobalTasks('spm-build');
+    grunt.util._.merge(grunt.config.data, require('spm-build').config);
+
     grunt.loadTasks('../_tasks/download/tasks');
-    grunt.registerTask('default', ['download']);
+    grunt.registerTask('build', ['download', 'spm-build']);
 };
