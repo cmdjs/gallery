@@ -65,5 +65,28 @@ module.exports = function(grunt) {
     });
   });
 
-  grunt.registerTask('spm-build', ['clean:build', 'transport:src', 'concat:js', 'copy:build', 'uglify:js', 'clean:dist', 'copy:dist', 'clean:build', 'spm-newline']);
+  grunt.registerTask('spm-build', [
+    'clean:build', // delete build direcotry first
+
+    'spm-install', // install dependencies
+
+    // build css
+    'transport:src',  // src/* -> .build/src/*
+    'concat:css',   // .build/src/*.css -> .build/tmp/*.css
+
+    // build js (must be invoke after css build)
+    'transport:css',  // .build/tmp/*.css -> .build/src/*.css.js
+    'concat:js',  // .build/src/* -> .build/dist/*.js
+
+    // to ./build/dist
+    'copy:build',
+    'cssmin:css',   // .build/tmp/*.css -> .build/dist/*.css
+    'uglify:js',  // .build/tmp/*.js -> .build/dist/*.js
+
+    'clean:dist',
+    'copy:dist',  // .build/dist -> dist
+    'clean:build',
+
+    'spm-newline'
+  ]);
 };
