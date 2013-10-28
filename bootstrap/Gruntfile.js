@@ -53,14 +53,14 @@ module.exports = function(grunt) {
                 options: {
                    dest: 'src/fonts'
                 },
-                url: 'https://raw.github.com/twbs/bootstrap/v<%= pkg.version%>/dist/fonts/glyphicons-halflings-regular.svg',
+                url: 'https://github.com/twbs/bootstrap/raw/master/fonts/glyphicons-halflings-regular.svg',
                 name: 'glyphicons-halflings-regular.svg'
             },
             fonts4: {
                 options: {
                    dest: 'src/fonts'
                 },
-                url: 'https://raw.github.com/twbs/bootstrap/v<%= pkg.version%>/dist/fonts/glyphicons-halflings-regular.woff',
+                url: 'https://github.com/twbs/bootstrap/raw/master/fonts/glyphicons-halflings-regular.woff',
                 name: 'glyphicons-halflings-regular.woff'
             }
         }
