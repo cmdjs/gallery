@@ -462,7 +462,7 @@ define(function(require, exports, module) {
       return ZeroClipboard;
     });
   } else if (typeof module === "object" && module && typeof module.exports === "object" && module.exports) {
-    _cjsModuleId = module.id || null;
+    
     module.exports = ZeroClipboard;
   } else {
     window.ZeroClipboard = ZeroClipboard;

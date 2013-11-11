@@ -462,7 +462,6 @@ define("gallery/zeroclipboard/1.2.2/zeroclipboard-debug", [], function(require, 
                 return ZeroClipboard;
             });
         } else if (typeof module === "object" && module && typeof module.exports === "object" && module.exports) {
-            _cjsModuleId = module.id || null;
             module.exports = ZeroClipboard;
         } else {
             window.ZeroClipboard = ZeroClipboard;

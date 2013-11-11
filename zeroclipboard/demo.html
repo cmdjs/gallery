@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+<button id="copy-button" data-clipboard-text="Copy Me!" title="Click to copy me.">Copy to Clipboard</button>
+
+<script src="http://assets.spmjs.org/seajs/seajs/2.1.1/sea.js"></script>
+<script>
+    seajs.config({
+        alias: {
+            '$': 'jquery/jquery/1.7.2/jquery'
+        }
+    });
+    seajs.use(['./src/zeroclipboard', '$'], function(ZeroClipboard, $) {
+        var clip = new ZeroClipboard(document.getElementById("copy-button"), {
+            moviePath: "./src/ZeroClipboard.swf"
+        });
+
+        clip.on("load", function(client) {
+            // alert( "movie is loaded" );
+
+            client.on("complete", function(client, args) {
+                // `this` is the element that was clicked
+                this.style.display = "none";
+                alert("Copied text to clipboard: " + args.text);
+            });
+        });
+    });
+</script>
+</body>
+</html>

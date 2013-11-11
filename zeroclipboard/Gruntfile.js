@@ -6,12 +6,17 @@ module.exports = function(grunt) {
 
     download: {
       options: {
-        dest: 'src',
+        dest: 'src'
       },
       src: {
         options: {
-          header: 'define(function(require, exports, module) {',
-          footer: 'window.ZeroClipboard = module.exports; })\n'
+          transform: function(code) {
+            return [
+              'define(function(require, exports, module) {',
+              code.replace("_cjsModuleId = module.id || null;", ""),
+              "window.ZeroClipboard = module.exports; })"
+            ].join('\n');
+          }
         },
         url: 'https://raw.github.com/zeroclipboard/ZeroClipboard/v<%= pkg.version%>/ZeroClipboard.js',
         name: 'zeroclipboard.js'
