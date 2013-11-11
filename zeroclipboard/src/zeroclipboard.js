@@ -5,7 +5,7 @@ define(function(require, exports, module) {
 * Copyright (c) 2013 Jon Rohan, James M. Greene
 * Licensed MIT
 * http://zeroclipboard.org/
-* v1.2.0
+* v1.2.2
 */
 (function() {
   "use strict";
@@ -170,14 +170,14 @@ define(function(require, exports, module) {
     var origins = [];
     if (options.trustedOrigins) {
       if (typeof options.trustedOrigins === "string") {
-        origins = origins.push(options.trustedOrigins);
+        origins.push(options.trustedOrigins);
       } else if (typeof options.trustedOrigins === "object" && "length" in options.trustedOrigins) {
         origins = origins.concat(options.trustedOrigins);
       }
     }
     if (options.trustedDomains) {
       if (typeof options.trustedDomains === "string") {
-        origins = origins.push(options.trustedDomains);
+        origins.push(options.trustedDomains);
       } else if (typeof options.trustedDomains === "object" && "length" in options.trustedDomains) {
         origins = origins.concat(options.trustedDomains);
       }
@@ -264,7 +264,7 @@ define(function(require, exports, module) {
   var _setHandCursor = function(enabled) {
     if (this.ready()) this.flashBridge.setHandCursor(enabled);
   };
-  ZeroClipboard.version = "1.2.0";
+  ZeroClipboard.version = "1.2.2";
   var _defaults = {
     moviePath: "ZeroClipboard.swf",
     trustedOrigins: null,
