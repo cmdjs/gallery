@@ -15,11 +15,11 @@ module.exports = function(grunt) {
         },
         url: 'https://raw.github.com/zeroclipboard/ZeroClipboard/v<%= pkg.version%>/ZeroClipboard.js',
         name: 'zeroclipboard.js'
-      },
+      }/*,
       swf: {
         url: "https://raw.github.com/zeroclipboard/ZeroClipboard/v<%= pkg.version%>/ZeroClipboard.swf",
         name: "ZeroClipboard.swf"
-      }
+      }*/
     }
   });
 
@@ -28,5 +28,5 @@ module.exports = function(grunt) {
   grunt.util._.merge(grunt.config.data, config);
 
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.registerTask('build', ['download', 'spm-build']); 
+  grunt.registerTask('build', ['download', 'spm-build']);
 };
