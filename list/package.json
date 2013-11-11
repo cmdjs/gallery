@@ -7,7 +7,7 @@
   "homepage": "http://www.listjs.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/javve/list"
+    "url": "https://github.com/javve/list.js"
   },
   "spm": {
     "output": [

@@ -1,4 +1,4 @@
-define("gallery/scrollmonitor/1.0.5/scrollmonitor-debug", [ "jquery-debug" ], function(require, exports, module) {
+define("gallery/scrollmonitor/1.0.7/scrollmonitor-debug", [ "jquery-debug" ], function(require, exports, module) {
     (function(factory) {
         if (typeof define !== "undefined" && define.amd) {
             define([ "jquery" ], factory);
@@ -28,9 +28,12 @@ define("gallery/scrollmonitor/1.0.5/scrollmonitor-debug", [ "jquery-debug" ], fu
         exports.viewportTop;
         exports.viewportBottom;
         exports.documentHeight;
-        exports.viewportHeight = $window.height();
+        exports.viewportHeight = windowHeight();
         var previousDocumentHeight;
         var latestEvent;
+        function windowHeight() {
+            return window.innerHeight || document.documentElement.clientHeight;
+        }
         var calculateViewportI;
         function calculateViewport() {
             exports.viewportTop = $window.scrollTop();
@@ -45,7 +48,7 @@ define("gallery/scrollmonitor/1.0.5/scrollmonitor-debug", [ "jquery-debug" ], fu
             }
         }
         function recalculateWatchLocationsAndTrigger() {
-            exports.viewportHeight = $window.height();
+            exports.viewportHeight = windowHeight();
             calculateViewport();
             updateAndTriggerWatchers();
         }
@@ -260,7 +263,11 @@ define("gallery/scrollmonitor/1.0.5/scrollmonitor-debug", [ "jquery-debug" ], fu
             var type = eventTypes[i];
             ElementWatcher.prototype[type] = eventHandlerFactory(type);
         }
-        calculateViewport();
+        try {
+            calculateViewport();
+        } catch (e) {
+            $(calculateViewport);
+        }
         function scrollMonitorListener(event) {
             latestEvent = event;
             calculateViewport();
