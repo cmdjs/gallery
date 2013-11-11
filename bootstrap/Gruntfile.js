@@ -34,7 +34,7 @@ module.exports = function(grunt) {
             "css-theme": {
                 url: 'https://raw.github.com/twbs/bootstrap/v<%= pkg.version%>/dist/css/bootstrap-theme.css',
                 name: "bootstrap-theme.css"
-            },
+            }/*,
             fonts1: {
                 options: {
                    dest: 'src/fonts'
@@ -62,7 +62,7 @@ module.exports = function(grunt) {
                 },
                 url: 'https://github.com/twbs/bootstrap/raw/master/fonts/glyphicons-halflings-regular.woff',
                 name: 'glyphicons-halflings-regular.woff'
-            }
+            }*/
         }
     });
 
