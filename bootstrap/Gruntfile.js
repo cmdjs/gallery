@@ -35,6 +35,8 @@ module.exports = function(grunt) {
                 url: 'https://raw.github.com/twbs/bootstrap/v<%= pkg.version%>/dist/css/bootstrap-theme.css',
                 name: "bootstrap-theme.css"
             }/*,
+
+            !!! 字体文件请手工下载
             fonts1: {
                 options: {
                    dest: 'src/fonts'
