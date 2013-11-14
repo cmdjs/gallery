@@ -19,7 +19,7 @@ module.exports = function(grunt) {
             return code
           }
         },
-        url: 'https://raw.github.com/jamesallardice/Placeholders.js/v<%= pkg.version %>/lib/main.js',
+        url: 'https://raw.github.com/jamesallardice/Placeholders.js/<%= pkg.version %>/lib/main.js',
         name: 'placeholders.js'
       },
       utils: {
@@ -30,7 +30,7 @@ module.exports = function(grunt) {
             return code
           }
         },
-        url: 'https://raw.github.com/jamesallardice/Placeholders.js/v<%= pkg.version %>/lib/utils.js',
+        url: 'https://raw.github.com/jamesallardice/Placeholders.js/<%= pkg.version %>/lib/utils.js',
         name: 'utils.js'
       }
     }
