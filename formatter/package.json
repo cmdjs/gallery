@@ -1,7 +1,7 @@
 {
   "family": "gallery",
   "name": "formatter",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "Format user input to match a specified pattern",
   "author": "Jarid Margolin <jarid@firstopinion.com>",
   "homepage": "http://firstopinion.github.io/formatter.js",
