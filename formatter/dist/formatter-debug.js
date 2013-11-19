@@ -1,6 +1,6 @@
-define("gallery/formatter/0.0.6/formatter-debug", [], function(require, exports, module) {
+define("gallery/formatter/0.0.8/formatter-debug", [], function(require, exports, module) {
     /*!
- * v0.0.6
+ * v0.0.8
  * Copyright (c) 2013 First Opinion
  * formatter.js is open sourced under the MIT license.
  *
