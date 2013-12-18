@@ -1,12 +1,12 @@
-define("gallery/underscore/1.4.4/underscore-debug", [], function(require, exports, module) {
-    //     Underscore.js 1.4.4
+define("gallery/underscore/1.5.2/underscore-debug", [], function(require, exports, module) {
+    //     Underscore.js 1.5.2
     //     http://underscorejs.org
-    //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud Inc.
+    //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
     //     Underscore may be freely distributed under the MIT license.
     (function() {
         // Baseline setup
         // --------------
-        // Establish the root object, `window` in the browser, or `global` on the server.
+        // Establish the root object, `window` in the browser, or `exports` on the server.
         var root = this;
         // Save the previous value of the `_` variable.
         var previousUnderscore = root._;
@@ -38,7 +38,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             root._ = _;
         }
         // Current version.
-        _.VERSION = "1.4.4";
+        _.VERSION = "1.5.2";
         // Collection Functions
         // --------------------
         // The cornerstone, an `each` implementation, aka `forEach`.
@@ -49,14 +49,13 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             if (nativeForEach && obj.forEach === nativeForEach) {
                 obj.forEach(iterator, context);
             } else if (obj.length === +obj.length) {
-                for (var i = 0, l = obj.length; i < l; i++) {
+                for (var i = 0, length = obj.length; i < length; i++) {
                     if (iterator.call(context, obj[i], i, obj) === breaker) return;
                 }
             } else {
-                for (var key in obj) {
-                    if (_.has(obj, key)) {
-                        if (iterator.call(context, obj[key], key, obj) === breaker) return;
-                    }
+                var keys = _.keys(obj);
+                for (var i = 0, length = keys.length; i < length; i++) {
+                    if (iterator.call(context, obj[keys[i]], keys[i], obj) === breaker) return;
                 }
             }
         };
@@ -67,7 +66,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             if (obj == null) return results;
             if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
             each(obj, function(value, index, list) {
-                results[results.length] = iterator.call(context, value, index, list);
+                results.push(iterator.call(context, value, index, list));
             });
             return results;
         };
@@ -137,7 +136,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             if (obj == null) return results;
             if (nativeFilter && obj.filter === nativeFilter) return obj.filter(iterator, context);
             each(obj, function(value, index, list) {
-                if (iterator.call(context, value, index, list)) results[results.length] = value;
+                if (iterator.call(context, value, index, list)) results.push(value);
             });
             return results;
         };
@@ -199,7 +198,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         // Convenience version of a common use case of `filter`: selecting only objects
         // containing specific `key:value` pairs.
         _.where = function(obj, attrs, first) {
-            if (_.isEmpty(attrs)) return first ? null : [];
+            if (_.isEmpty(attrs)) return first ? void 0 : [];
             return _[first ? "find" : "filter"](obj, function(value) {
                 for (var key in attrs) {
                     if (attrs[key] !== value[key]) return false;
@@ -214,7 +213,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         };
         // Return the maximum element or (element-based computation).
         // Can't optimize arrays of integers longer than 65,535 elements.
-        // See: https://bugs.webkit.org/show_bug.cgi?id=80797
+        // See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
         _.max = function(obj, iterator, context) {
             if (!iterator && _.isArray(obj) && obj[0] === +obj[0] && obj.length < 65535) {
                 return Math.max.apply(Math, obj);
@@ -226,7 +225,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             };
             each(obj, function(value, index, list) {
                 var computed = iterator ? iterator.call(context, value, index, list) : value;
-                computed >= result.computed && (result = {
+                computed > result.computed && (result = {
                     value: value,
                     computed: computed
                 });
@@ -252,7 +251,8 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             });
             return result.value;
         };
-        // Shuffle an array.
+        // Shuffle an array, using the modern version of the 
+        // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
         _.shuffle = function(obj) {
             var rand;
             var index = 0;
@@ -263,6 +263,15 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
                 shuffled[rand] = value;
             });
             return shuffled;
+        };
+        // Sample **n** random values from an array.
+        // If **n** is not specified, returns a single random element from the array.
+        // The internal `guard` argument allows it to work with `map`.
+        _.sample = function(obj, n, guard) {
+            if (arguments.length < 2 || guard) {
+                return obj[_.random(obj.length - 1)];
+            }
+            return _.shuffle(obj).slice(0, Math.max(0, n));
         };
         // An internal function to generate lookup iterators.
         var lookupIterator = function(value) {
@@ -286,35 +295,37 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
                     if (a > b || a === void 0) return 1;
                     if (a < b || b === void 0) return -1;
                 }
-                return left.index < right.index ? -1 : 1;
+                return left.index - right.index;
             }), "value");
         };
         // An internal function used for aggregate "group by" operations.
-        var group = function(obj, value, context, behavior) {
-            var result = {};
-            var iterator = lookupIterator(value || _.identity);
-            each(obj, function(value, index) {
-                var key = iterator.call(context, value, index, obj);
-                behavior(result, key, value);
-            });
-            return result;
+        var group = function(behavior) {
+            return function(obj, value, context) {
+                var result = {};
+                var iterator = value == null ? _.identity : lookupIterator(value);
+                each(obj, function(value, index) {
+                    var key = iterator.call(context, value, index, obj);
+                    behavior(result, key, value);
+                });
+                return result;
+            };
         };
         // Groups the object's values by a criterion. Pass either a string attribute
         // to group by, or a function that returns the criterion.
-        _.groupBy = function(obj, value, context) {
-            return group(obj, value, context, function(result, key, value) {
-                (_.has(result, key) ? result[key] : result[key] = []).push(value);
-            });
-        };
+        _.groupBy = group(function(result, key, value) {
+            (_.has(result, key) ? result[key] : result[key] = []).push(value);
+        });
+        // Indexes the object's values by a criterion, similar to `groupBy`, but for
+        // when you know that your index values will be unique.
+        _.indexBy = group(function(result, key, value) {
+            result[key] = value;
+        });
         // Counts instances of an object that group by a certain criterion. Pass
         // either a string attribute to count by, or a function that returns the
         // criterion.
-        _.countBy = function(obj, value, context) {
-            return group(obj, value, context, function(result, key) {
-                if (!_.has(result, key)) result[key] = 0;
-                result[key]++;
-            });
-        };
+        _.countBy = group(function(result, key) {
+            _.has(result, key) ? result[key]++ : result[key] = 1;
+        });
         // Use a comparator function to figure out the smallest index at which
         // an object should be inserted so as to maintain order. Uses binary search.
         _.sortedIndex = function(array, obj, iterator, context) {
@@ -327,7 +338,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             }
             return low;
         };
-        // Safely convert anything iterable into a real, live array.
+        // Safely create a real, live array from anything iterable.
         _.toArray = function(obj) {
             if (!obj) return [];
             if (_.isArray(obj)) return slice.call(obj);
@@ -346,7 +357,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         // allows it to work with `_.map`.
         _.first = _.head = _.take = function(array, n, guard) {
             if (array == null) return void 0;
-            return n != null && !guard ? slice.call(array, 0, n) : array[0];
+            return n == null || guard ? array[0] : slice.call(array, 0, n);
         };
         // Returns everything but the last entry of the array. Especially useful on
         // the arguments object. Passing **n** will return all the values in
@@ -359,10 +370,10 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         // values in the array. The **guard** check allows it to work with `_.map`.
         _.last = function(array, n, guard) {
             if (array == null) return void 0;
-            if (n != null && !guard) {
-                return slice.call(array, Math.max(array.length - n, 0));
-            } else {
+            if (n == null || guard) {
                 return array[array.length - 1];
+            } else {
+                return slice.call(array, Math.max(array.length - n, 0));
             }
         };
         // Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
@@ -378,8 +389,11 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         };
         // Internal implementation of a recursive `flatten` function.
         var flatten = function(input, shallow, output) {
+            if (shallow && _.every(input, _.isArray)) {
+                return concat.apply(output, input);
+            }
             each(input, function(value) {
-                if (_.isArray(value)) {
+                if (_.isArray(value) || _.isArguments(value)) {
                     shallow ? push.apply(output, value) : flatten(value, shallow, output);
                 } else {
                     output.push(value);
@@ -387,7 +401,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             });
             return output;
         };
-        // Return a completely flattened version of an array.
+        // Flatten out an array, either recursively (by default), or just one level.
         _.flatten = function(array, shallow) {
             return flatten(array, shallow, []);
         };
@@ -418,7 +432,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         // Produce an array that contains the union: each distinct element from all of
         // the passed-in arrays.
         _.union = function() {
-            return _.uniq(concat.apply(ArrayProto, arguments));
+            return _.uniq(_.flatten(arguments, true));
         };
         // Produce an array that contains every item shared between all the
         // passed-in arrays.
@@ -441,11 +455,10 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         // Zip together multiple lists into a single array -- elements that share
         // an index go together.
         _.zip = function() {
-            var args = slice.call(arguments);
-            var length = _.max(_.pluck(args, "length"));
+            var length = _.max(_.pluck(arguments, "length").concat(0));
             var results = new Array(length);
             for (var i = 0; i < length; i++) {
-                results[i] = _.pluck(args, "" + i);
+                results[i] = _.pluck(arguments, "" + i);
             }
             return results;
         };
@@ -455,7 +468,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         _.object = function(list, values) {
             if (list == null) return {};
             var result = {};
-            for (var i = 0, l = list.length; i < l; i++) {
+            for (var i = 0, length = list.length; i < length; i++) {
                 if (values) {
                     result[list[i]] = values[i];
                 } else {
@@ -472,17 +485,17 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         // for **isSorted** to use binary search.
         _.indexOf = function(array, item, isSorted) {
             if (array == null) return -1;
-            var i = 0, l = array.length;
+            var i = 0, length = array.length;
             if (isSorted) {
                 if (typeof isSorted == "number") {
-                    i = isSorted < 0 ? Math.max(0, l + isSorted) : isSorted;
+                    i = isSorted < 0 ? Math.max(0, length + isSorted) : isSorted;
                 } else {
                     i = _.sortedIndex(array, item);
                     return array[i] === item ? i : -1;
                 }
             }
             if (nativeIndexOf && array.indexOf === nativeIndexOf) return array.indexOf(item, isSorted);
-            for (;i < l; i++) if (array[i] === item) return i;
+            for (;i < length; i++) if (array[i] === item) return i;
             return -1;
         };
         // Delegates to **ECMAScript 5**'s native `lastIndexOf` if available.
@@ -505,10 +518,10 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
                 start = 0;
             }
             step = arguments[2] || 1;
-            var len = Math.max(Math.ceil((stop - start) / step), 0);
+            var length = Math.max(Math.ceil((stop - start) / step), 0);
             var idx = 0;
-            var range = new Array(len);
-            while (idx < len) {
+            var range = new Array(length);
+            while (idx < length) {
                 range[idx++] = start;
                 start += step;
             }
@@ -516,14 +529,24 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         };
         // Function (ahem) Functions
         // ------------------
+        // Reusable constructor function for prototype setting.
+        var ctor = function() {};
         // Create a function bound to a given object (assigning `this`, and arguments,
         // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
         // available.
         _.bind = function(func, context) {
-            if (func.bind === nativeBind && nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
-            var args = slice.call(arguments, 2);
-            return function() {
-                return func.apply(context, args.concat(slice.call(arguments)));
+            var args, bound;
+            if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
+            if (!_.isFunction(func)) throw new TypeError();
+            args = slice.call(arguments, 2);
+            return bound = function() {
+                if (!(this instanceof bound)) return func.apply(context, args.concat(slice.call(arguments)));
+                ctor.prototype = func.prototype;
+                var self = new ctor();
+                ctor.prototype = null;
+                var result = func.apply(self, args.concat(slice.call(arguments)));
+                if (Object(result) === result) return result;
+                return self;
             };
         };
         // Partially apply a function by creating a version that has had some of its
@@ -538,7 +561,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         // all callbacks defined on an object belong to it.
         _.bindAll = function(obj) {
             var funcs = slice.call(arguments, 1);
-            if (funcs.length === 0) funcs = _.functions(obj);
+            if (funcs.length === 0) throw new Error("bindAll must be passed function names");
             each(funcs, function(f) {
                 obj[f] = _.bind(obj[f], obj);
             });
@@ -567,17 +590,23 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             return _.delay.apply(_, [ func, 1 ].concat(slice.call(arguments, 1)));
         };
         // Returns a function, that, when invoked, will only be triggered at most once
-        // during a given window of time.
-        _.throttle = function(func, wait) {
-            var context, args, timeout, result;
+        // during a given window of time. Normally, the throttled function will run
+        // as much as it can, without ever going more than once per `wait` duration;
+        // but if you'd like to disable the execution on the leading edge, pass
+        // `{leading: false}`. To disable execution on the trailing edge, ditto.
+        _.throttle = function(func, wait, options) {
+            var context, args, result;
+            var timeout = null;
             var previous = 0;
+            options || (options = {});
             var later = function() {
-                previous = new Date();
+                previous = options.leading === false ? 0 : new Date();
                 timeout = null;
                 result = func.apply(context, args);
             };
             return function() {
                 var now = new Date();
+                if (!previous && options.leading === false) previous = now;
                 var remaining = wait - (now - previous);
                 context = this;
                 args = arguments;
@@ -586,7 +615,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
                     timeout = null;
                     previous = now;
                     result = func.apply(context, args);
-                } else if (!timeout) {
+                } else if (!timeout && options.trailing !== false) {
                     timeout = setTimeout(later, remaining);
                 }
                 return result;
@@ -597,16 +626,24 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         // N milliseconds. If `immediate` is passed, trigger the function on the
         // leading edge, instead of the trailing.
         _.debounce = function(func, wait, immediate) {
-            var timeout, result;
+            var timeout, args, context, timestamp, result;
             return function() {
-                var context = this, args = arguments;
+                context = this;
+                args = arguments;
+                timestamp = new Date();
                 var later = function() {
-                    timeout = null;
-                    if (!immediate) result = func.apply(context, args);
+                    var last = new Date() - timestamp;
+                    if (last < wait) {
+                        timeout = setTimeout(later, wait - last);
+                    } else {
+                        timeout = null;
+                        if (!immediate) result = func.apply(context, args);
+                    }
                 };
                 var callNow = immediate && !timeout;
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
+                if (!timeout) {
+                    timeout = setTimeout(later, wait);
+                }
                 if (callNow) result = func.apply(context, args);
                 return result;
             };
@@ -647,7 +684,6 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         };
         // Returns a function that will only be executed after being called N times.
         _.after = function(times, func) {
-            if (times <= 0) return func();
             return function() {
                 if (--times < 1) {
                     return func.apply(this, arguments);
@@ -661,25 +697,36 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         _.keys = nativeKeys || function(obj) {
             if (obj !== Object(obj)) throw new TypeError("Invalid object");
             var keys = [];
-            for (var key in obj) if (_.has(obj, key)) keys[keys.length] = key;
+            for (var key in obj) if (_.has(obj, key)) keys.push(key);
             return keys;
         };
         // Retrieve the values of an object's properties.
         _.values = function(obj) {
-            var values = [];
-            for (var key in obj) if (_.has(obj, key)) values.push(obj[key]);
+            var keys = _.keys(obj);
+            var length = keys.length;
+            var values = new Array(length);
+            for (var i = 0; i < length; i++) {
+                values[i] = obj[keys[i]];
+            }
             return values;
         };
         // Convert an object into a list of `[key, value]` pairs.
         _.pairs = function(obj) {
-            var pairs = [];
-            for (var key in obj) if (_.has(obj, key)) pairs.push([ key, obj[key] ]);
+            var keys = _.keys(obj);
+            var length = keys.length;
+            var pairs = new Array(length);
+            for (var i = 0; i < length; i++) {
+                pairs[i] = [ keys[i], obj[keys[i]] ];
+            }
             return pairs;
         };
         // Invert the keys and values of an object. The values must be serializable.
         _.invert = function(obj) {
             var result = {};
-            for (var key in obj) if (_.has(obj, key)) result[obj[key]] = key;
+            var keys = _.keys(obj);
+            for (var i = 0, length = keys.length; i < length; i++) {
+                result[obj[keys[i]]] = keys[i];
+            }
             return result;
         };
         // Return a sorted list of the function names available on the object.
@@ -725,7 +772,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
             each(slice.call(arguments, 1), function(source) {
                 if (source) {
                     for (var prop in source) {
-                        if (obj[prop] == null) obj[prop] = source[prop];
+                        if (obj[prop] === void 0) obj[prop] = source[prop];
                     }
                 }
             });
@@ -746,7 +793,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         // Internal recursive comparison function for `isEqual`.
         var eq = function(a, b, aStack, bStack) {
             // Identical objects are equal. `0 === -0`, but they aren't identical.
-            // See the Harmony `egal` proposal: http://wiki.ecmascript.org/doku.php?id=harmony:egal.
+            // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
             if (a === b) return a !== 0 || 1 / a == 1 / b;
             // A strict comparison is necessary because `null == undefined`.
             if (a == null || b == null) return a === b;
@@ -788,6 +835,12 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
                 // unique nested structures.
                 if (aStack[length] == a) return bStack[length] == b;
             }
+            // Objects with different constructors are not equivalent, but `Object`s
+            // from different frames are.
+            var aCtor = a.constructor, bCtor = b.constructor;
+            if (aCtor !== bCtor && !(_.isFunction(aCtor) && aCtor instanceof aCtor && _.isFunction(bCtor) && bCtor instanceof bCtor)) {
+                return false;
+            }
             // Add the first object to the stack of traversed objects.
             aStack.push(a);
             bStack.push(b);
@@ -804,12 +857,6 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
                     }
                 }
             } else {
-                // Objects with different constructors are not equivalent, but `Object`s
-                // from different frames are.
-                var aCtor = a.constructor, bCtor = b.constructor;
-                if (aCtor !== bCtor && !(_.isFunction(aCtor) && aCtor instanceof aCtor && _.isFunction(bCtor) && bCtor instanceof bCtor)) {
-                    return false;
-                }
                 // Deep compare objects.
                 for (var key in a) {
                     if (_.has(a, key)) {
@@ -915,7 +962,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
         };
         // Run a function **n** times.
         _.times = function(n, iterator, context) {
-            var accum = Array(n);
+            var accum = Array(Math.max(0, n));
             for (var i = 0; i < n; i++) accum[i] = iterator.call(context, i);
             return accum;
         };
@@ -934,8 +981,7 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
                 "<": "&lt;",
                 ">": "&gt;",
                 '"': "&quot;",
-                "'": "&#x27;",
-                "/": "&#x2F;"
+                "'": "&#x27;"
             }
         };
         entityMap.unescape = _.invert(entityMap.escape);
@@ -953,10 +999,10 @@ define("gallery/underscore/1.4.4/underscore-debug", [], function(require, export
                 });
             };
         });
-        // If the value of the named property is a function then invoke it;
-        // otherwise, return it.
+        // If the value of the named `property` is a function then invoke it with the
+        // `object` as context; otherwise, return it.
         _.result = function(object, property) {
-            if (object == null) return null;
+            if (object == null) return void 0;
             var value = object[property];
             return _.isFunction(value) ? value.call(object) : value;
         };

@@ -23,38 +23,12 @@ module.exports = function(grunt) {
       },
       src: {
         url: 'https://raw.github.com/documentcloud/backbone/<%= pkg.version %>/backbone.js',
-        name: 'backbone-debug.js'
-      },
-      min: {
-        url: 'https://raw.github.com/documentcloud/backbone/<%= pkg.version %>/backbone-min.js',
         name: 'backbone.js'
-      }
-    },
-    transport: {
-      options: {
-        debug: false,
-        process: false
-      },
-      debug: {
-        files: [{
-          cwd: 'src',
-          src: 'backbone-debug.js',
-          dest: 'dist'
-        }]
-      },
-      min: {
-        options: {
-          uglify: {}
-        },
-        files: [{
-          cwd: 'src',
-          src: 'backbone.js',
-          dest: 'dist'
-        }]
       }
     }
   });
 
+  grunt.loadGlobalTasks('spm-build');
   grunt.loadTasks('../_tasks/download/tasks');
   grunt.util._.merge(grunt.config.data, require('spm-build').config);
 
