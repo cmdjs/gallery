@@ -1,0 +1,34 @@
+{
+  "name": "numeral",
+  "family": "gallery",
+  "version": "1.5.3",
+  "title": "Numeral JS",
+  "package": "https://raw.github.com/adamwdraper/Numeral-js/master/package.json",
+  "description": "Format and manipulate numbers.",
+  "homepage": "http://numeraljs.com",
+  "author": "Adam Draper <adamwdraper@gmail.com> (http://github.com/adamwdraper/)",
+  "keywords": [
+    "numeral",
+    "number",
+    "format",
+    "time",
+    "money",
+    "percentage"
+  ],
+  "main": "./numeral.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adamwdraper/Numeral-js"
+  },
+  "bugs": {
+    "url": "https://github.com/adamwdraper/Numeral-js/issues"
+  },
+  "licenses" : [
+    {
+      "type" : "MIT"
+    }
+  ],
+  "spm": {
+    "output": ["numeral.js"]
+  }
+}
