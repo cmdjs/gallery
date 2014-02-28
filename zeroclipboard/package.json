@@ -22,8 +22,8 @@
     "homepage": "http://zeroclipboard.org/",
     "repository": {
       "type": "git",
-      "url": "https://github.com/jonrohan/ZeroClipboard.git"
-    },    
+      "url": "https://github.com/zeroclipboard/zeroclipboard.git"
+    },
     "license": "MIT",
     "spm": {
       "output": ["zeroclipboard.js", "ZeroClipboard.swf"]

@@ -71,13 +71,19 @@ module.exports = function(grunt) {
 
   function getVersion(repo, callback) {
     var uri = 'https://api.github.com/repos/' + repo + '/tags'
-    request({json: true, url: uri}, function(err, res, body) {
+    request({
+      json: true,
+      url: uri,
+      headers: {
+        'User-Agent': 'request'
+      }
+    }, function(err, res, body) {
       if (err) {
         callback(err);
       } else if (res.statusCode !== 200) {
+        console.log(body);
         callback('status code: ' + res.statusCode + ' ' + uri);
       } else {
-
         var names = body.map(function(tag) {
           return tag.name.replace(/^[^\d\.]*((?:\d\.)+\d).*$/, '$1');
         });

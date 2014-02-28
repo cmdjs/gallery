@@ -3,11 +3,11 @@
   "family": "gallery",
   "version": "2.1.3",
   "author": "Nicolas Gallagher",
-  "homepage": "http://necolas.github.io/normalize.css/",
+  "homepage": "http://necolas.github.io/normalize.css",
   "description": "A modern, HTML5-ready alternative to CSS resets",
   "repository": {
     "type": "git",
-    "url": "https://github.com/necolas/normalize.css/"
+    "url": "https://github.com/necolas/normalize.css"
   },
   "keywords": [
     "reset",
