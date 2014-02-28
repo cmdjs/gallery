@@ -1,6 +1,6 @@
-define("gallery/formatter/0.0.8/formatter-debug", [], function(require, exports, module) {
+define("gallery/formatter/0.0.9/formatter-debug", [], function(require, exports, module) {
     /*!
- * v0.0.8
+ * v0.0.9
  * Copyright (c) 2013 First Opinion
  * formatter.js is open sourced under the MIT license.
  *
@@ -40,7 +40,8 @@ define("gallery/formatter/0.0.8/formatter-debug", [], function(require, exports,
             "*": /[A-Za-z0-9]/
         };
         a.prototype.resetPattern = function(a) {
-            this.sel = h.get(this.el), this.val = this.el.value, this.delta = 0, this._removeChars();
+            this.opts.pattern = a, this.sel = h.get(this.el), this.val = this.el.value, this.delta = 0, 
+            this._removeChars();
             var b = d.parse(a);
             this.mLength = b.mLength, this.chars = b.chars, this.inpts = b.inpts, this._processKey("", !1);
         }, a.prototype._keyDown = function(a) {
@@ -83,7 +84,7 @@ define("gallery/formatter/0.0.8/formatter-debug", [], function(require, exports,
             this.hldrs = {}, this.focus = this.val.length;
         }, a.prototype._validateInpts = function() {
             for (var a = 0; a < this.val.length; a++) {
-                var b = this.inpts[a], d = !c[b], e = !c[b].test(this.val.charAt(a)), f = this.inpts[a];
+                var b = this.inpts[a], d = !c[b], e = !d && !c[b].test(this.val.charAt(a)), f = this.inpts[a];
                 (d || e) && f && (this.val = i.removeChars(this.val, a, a + 1), this.focusStart--, 
                 this.newPos--, this.delta--, a--);
             }
