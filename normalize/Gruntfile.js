@@ -14,7 +14,7 @@ module.exports = function(grunt) {
             return code;
           }
         },
-        url: 'https://raw.github.com/necolas/normalize.css/v<%= pkg.version %>/normalize.css',
+        url: 'https://raw.github.com/necolas/normalize.css/<%= pkg.version %>/normalize.css',
         name: 'normalize.css'
       }
     }
