@@ -11,12 +11,8 @@ module.exports = function(grunt) {
       src: {
         options: {
           transform: function(code) {
-            code = code.replace(
-              /\(function\s*\(undefined\)\s*\{/,
-                'define(function(require, exports, module) {'
-            );
-            code = code.slice(0, code.indexOf('function makeGlobal() {'))
-            code += 'module.exports = moment;\n});\n'
+            code = 'define(function(require, exports, module) {\n' + code;
+            code += '});';
             return code
           }
         },
