@@ -1,7 +1,7 @@
 {
     "name": "underscore",
     "family": "gallery",
-    "version": "1.5.2",
+    "version": "1.6.0",
     "package": "https://raw.github.com/documentcloud/underscore/master/package.json",
     "description": "JavaScript's functional programming helper library.",
     "homepage": "http://underscorejs.org",
