@@ -1,5 +1,4 @@
-define("gallery/spin/1.3.2/spin-debug", [], function(require, exports, module) {
-    //fgnass.github.com/spin.js#v1.3.2
+define("gallery/spin/1.3.3/spin-debug", [], function(require, exports, module) {
     /**
  * Copyright (c) 2011-2013 Felix Gnass
  * Licensed under the MIT license

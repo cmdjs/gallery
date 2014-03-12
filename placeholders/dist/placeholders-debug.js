@@ -1,4 +1,4 @@
-define("gallery/placeholders/3.0.1/placeholders-debug", [ "./utils-debug" ], function(require, exports, module) {
+define("gallery/placeholders/3.0.2/placeholders-debug", [ "./utils-debug" ], function(require, exports, module) {
     require("./utils-debug");
     (function(global) {
         "use strict";
@@ -41,7 +41,8 @@ define("gallery/placeholders/3.0.1/placeholders-debug", [ "./utils-debug" ], fun
                 elem.className = elem.className.replace(classNameRegExp, "");
                 // Restore the maxlength value
                 maxLength = elem.getAttribute(ATTR_MAXLENGTH);
-                if (maxLength) {
+                if (parseInt(maxLength, 10) >= 0) {
+                    // Old FF returns -1 if attribute not set (see GH-56)
                     elem.setAttribute("maxLength", maxLength);
                     elem.removeAttribute(ATTR_MAXLENGTH);
                 }
@@ -81,7 +82,7 @@ define("gallery/placeholders/3.0.1/placeholders-debug", [ "./utils-debug" ], fun
             return false;
         }
         function handleElem(node, callback) {
-            var handleInputs, handleTextareas, elem, len, i;
+            var handleInputsLength, handleTextareasLength, handleInputs, handleTextareas, elem, len, i;
             // Check if the passed in node is an input/textarea (in which case it can't have any affected descendants)
             if (node && node.getAttribute(ATTR_CURRENT_VAL)) {
                 callback(node);
@@ -89,9 +90,11 @@ define("gallery/placeholders/3.0.1/placeholders-debug", [ "./utils-debug" ], fun
                 // If an element was passed in, get all affected descendants. Otherwise, get all affected elements in document
                 handleInputs = node ? node.getElementsByTagName("input") : inputs;
                 handleTextareas = node ? node.getElementsByTagName("textarea") : textareas;
+                handleInputsLength = handleInputs ? handleInputs.length : 0;
+                handleTextareasLength = handleTextareas ? handleTextareas.length : 0;
                 // Run the callback for each element
-                for (i = 0, len = handleInputs.length + handleTextareas.length; i < len; i++) {
-                    elem = i < handleInputs.length ? handleInputs[i] : handleTextareas[i - handleInputs.length];
+                for (i = 0, len = handleInputsLength + handleTextareasLength; i < len; i++) {
+                    elem = i < handleInputsLength ? handleInputs[i] : handleTextareas[i - handleInputsLength];
                     callback(elem);
                 }
             }
@@ -167,6 +170,10 @@ define("gallery/placeholders/3.0.1/placeholders-debug", [ "./utils-debug" ], fun
             // If the element is part of a form, make sure the placeholder string is not submitted as a value
             if (elem.form) {
                 form = elem.form;
+                // If the type of the property is a string then we have a "form" attribute and need to get the real form
+                if (typeof form === "string") {
+                    form = document.getElementById(form);
+                }
                 // Set a flag on the form so we know it's been handled (forms can contain multiple inputs)
                 if (!form.getAttribute(ATTR_FORM_HANDLED)) {
                     Utils.addEventListener(form, "submit", makeSubmitHandler(form));
@@ -264,7 +271,7 @@ define("gallery/placeholders/3.0.1/placeholders-debug", [ "./utils-debug" ], fun
             }, 100);
         }
         Utils.addEventListener(global, "beforeunload", function() {
-            disablePlaceholders();
+            Placeholders.disable();
         });
         // Expose public methods
         Placeholders.disable = Placeholders.nativeSupport ? noop : disablePlaceholders;
@@ -278,7 +285,7 @@ define("gallery/placeholders/3.0.1/placeholders-debug", [ "./utils-debug" ], fun
     }
 });
 
-define("gallery/placeholders/3.0.1/utils-debug", [], function(require, exports, module) {
+define("gallery/placeholders/3.0.2/utils-debug", [], function(require, exports, module) {
     /* 
  * The MIT License
  *
