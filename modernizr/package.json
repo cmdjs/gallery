@@ -1,0 +1,28 @@
+{
+  "family": "gallery",
+  "name": "modernizr",
+  "version": "2.7.1",
+  "description": "Modernizr: the feature detection library for HTML5/CSS3.",
+  "homepage": "https://github.com/Modernizr/Modernizr",
+  "author": "Faruk Ates, Paul Irish, Alex Sexton",
+  "maintainers": [
+    "Faruk Ates, Paul Irish, Alex Sexton"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Modernizr/Modernizr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Modernizr/Modernizr/issues"
+  },
+  "keywords": [],
+  "licenses": "MIT",
+  "spm": {
+    "output": [
+      "modernizr.js"
+    ],
+    "alias": {},
+    "devAlias": {},
+    "engines": {}
+  }
+}
