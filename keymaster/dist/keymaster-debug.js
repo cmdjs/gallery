@@ -1,7 +1,7 @@
 //     keymaster.js
-//     (c) 2011-2012 Thomas Fuchs
+//     (c) 2011-2013 Thomas Fuchs
 //     keymaster.js may be freely distributed under the MIT license.
-define("gallery/keymaster/1.0.2/keymaster-debug", [], function(require, exports, module) {
+define("gallery/keymaster/1.6.2/keymaster-debug", [], function(require, exports, module) {
     var global = {};
     var k, _handlers = {}, _mods = {
         16: false,
@@ -79,8 +79,8 @@ define("gallery/keymaster/1.0.2/keymaster-debug", [], function(require, exports,
         for (k in _mods) _mods[k] = event[modifierMap[k]];
     }
     // handle keydown event
-    function dispatch(event, scope) {
-        var key, handler, k, i, modifiersMatch;
+    function dispatch(event) {
+        var key, handler, k, i, modifiersMatch, scope;
         key = event.keyCode;
         if (index(_downKeys, key) == -1) {
             _downKeys.push(key);
@@ -100,6 +100,7 @@ define("gallery/keymaster/1.0.2/keymaster-debug", [], function(require, exports,
         if (!assignKey.filter.call(this, event)) return;
         // abort if no potentially matching shortcuts found
         if (!(key in _handlers)) return;
+        scope = getScope();
         // for each potential shortcut
         for (i = 0; i < _handlers[key].length; i++) {
             handler = _handlers[key][i];
@@ -169,23 +170,27 @@ define("gallery/keymaster/1.0.2/keymaster-debug", [], function(require, exports,
     }
     // unbind all handlers for given key in current scope
     function unbindKey(key, scope) {
-        var keys = key.split("+"), mods = [], i, obj;
-        if (keys.length > 1) {
-            mods = getMods(keys);
-            key = keys[keys.length - 1];
-        }
-        key = code(key);
-        if (scope === undefined) {
-            scope = getScope();
-        }
-        if (!_handlers[key]) {
-            return;
-        }
-        for (i in _handlers[key]) {
-            obj = _handlers[key][i];
-            // only clear handlers if correct scope and mods match
-            if (obj.scope === scope && compareArray(obj.mods, mods)) {
-                _handlers[key][i] = {};
+        var multipleKeys, keys, mods = [], i, j, obj;
+        multipleKeys = getKeys(key);
+        for (j = 0; j < multipleKeys.length; j++) {
+            keys = multipleKeys[j].split("+");
+            if (keys.length > 1) {
+                mods = getMods(keys);
+                key = keys[keys.length - 1];
+            }
+            key = code(key);
+            if (scope === undefined) {
+                scope = getScope();
+            }
+            if (!_handlers[key]) {
+                return;
+            }
+            for (i = 0; i < _handlers[key].length; i++) {
+                obj = _handlers[key][i];
+                // only clear handlers if correct scope and mods match
+                if (obj.scope === scope && compareArray(obj.mods, mods)) {
+                    _handlers[key][i] = {};
+                }
             }
         }
     }
@@ -248,7 +253,7 @@ define("gallery/keymaster/1.0.2/keymaster-debug", [], function(require, exports,
     }
     // set the handlers globally on document
     addEvent(document, "keydown", function(event) {
-        dispatch(event, _scope);
+        dispatch(event);
     });
     // Passing _scope to a callback to ensure it remains the same by execution. Fixes #48
     addEvent(document, "keyup", clearModifier);
