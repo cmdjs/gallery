@@ -2,6 +2,7 @@ module.exports = function(grunt) {
   var fs = require('fs');
   var async = require('async');
   var request = require('request');
+  var semver = require('semver');
 
   var modules = fs.readdirSync('.').filter(function(name) {
     return fs.statSync(name).isDirectory() && !grunt.util._.contains(['.git', '_tasks', 'node_modules'], name);
@@ -62,6 +63,7 @@ module.exports = function(grunt) {
       var repo = pkg.repository.url;
       repo = repo.replace('https://github.com/', '');
       repo = repo.replace('git://github.com/', '');
+      repo = repo.replace('git@github.com:', '');
       repo = repo.replace('.git', '');
       getVersion(repo, callback);
     } else {
@@ -81,11 +83,11 @@ module.exports = function(grunt) {
       if (err) {
         callback(err);
       } else if (res.statusCode !== 200) {
-        console.log(body);
         callback('status code: ' + res.statusCode + ' ' + uri);
       } else {
         var names = body.map(function(tag) {
-          return tag.name.replace(/^[^\d\.]*((?:\d\.)+\d).*$/, '$1');
+          var version = semver.valid(tag.name);
+          if (version) return version;
         });
         callback(null, names.sort().pop());
       }

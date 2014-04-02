@@ -10,7 +10,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:Modernizr/Modernizr.git"
+    "url": "git://github.com/Modernizr/Modernizr.git"
   },
   "bugs": {
     "url": "https://github.com/Modernizr/Modernizr/issues"

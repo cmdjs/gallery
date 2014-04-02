@@ -8,6 +8,7 @@
     "expect.js": "*",
     "request": "*",
     "grunt": "*",
+    "semver": "*",
     "async": "*"
   },
   "spm": {
