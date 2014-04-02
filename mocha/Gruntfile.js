@@ -25,7 +25,7 @@ module.exports = function(grunt) {
       }
     },
     cssmin: {
-      css: {
+      src: {
         files: {
           'dist/mocha.css': ['dist/mocha-debug.css']
         }
@@ -33,9 +33,9 @@ module.exports = function(grunt) {
     }
   });
 
-  require('grunt-spm-build').initConfig(grunt, {pkg: pkg});
-  grunt.loadGlobalTasks('grunt-spm-build');
+  grunt.loadGlobalTasks('spm-build');
+  grunt.util._.merge(grunt.config.data, require('spm-build').config);
 
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.registerTask('build', ['download', 'uglify', 'cssmin', 'newline']);
+  grunt.registerTask('build', ['download', 'cssmin:src', 'uglify:src', 'spm-newline']);
 };
