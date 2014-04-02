@@ -13,7 +13,7 @@ module.exports = function(grunt) {
           transform: function(code) {
             return [
               'define(function(require, exports, module) {',
-              code.replace("_cjsModuleId = module.id || null;", ""),
+              code.replace("_cjsModuleId = module.id || null;", "").replace(' && typeof window.require === "function"', ''),
               "window.ZeroClipboard = module.exports; })"
             ].join('\n');
           }
