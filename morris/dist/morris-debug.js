@@ -1,7 +1,16 @@
-define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/raphael-debug" ], function(require, exports, module) {
-    var jQuery = require("$-debug"), Raphael = require("gallery/raphael/2.1.0/raphael-debug");
+define("gallery/morris/0.5.0/morris-debug", [ "$-debug", "gallery/raphael/2.1.2/raphael-debug" ], function(require, exports, module) {
+    var jQuery = require("$-debug"), Raphael = require("gallery/raphael/2.1.2/raphael-debug");
+    /* @license
+morris.js v0.5.0
+Copyright 2014 Olly Smith All rights reserved.
+Licensed under the BSD-2-Clause License.
+*/
     (function() {
-        var $, Morris, minutesSpecHelper, secondsSpecHelper, __slice = [].slice, __hasProp = {}.hasOwnProperty, __extends = function(child, parent) {
+        var $, Morris, minutesSpecHelper, secondsSpecHelper, __slice = [].slice, __bind = function(fn, me) {
+            return function() {
+                return fn.apply(me, arguments);
+            };
+        }, __hasProp = {}.hasOwnProperty, __extends = function(child, parent) {
             for (var key in parent) {
                 if (__hasProp.call(parent, key)) child[key] = parent[key];
             }
@@ -12,10 +21,6 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
             child.prototype = new ctor();
             child.__super__ = parent.prototype;
             return child;
-        }, __bind = function(fn, me) {
-            return function() {
-                return fn.apply(me, arguments);
-            };
         }, __indexOf = [].indexOf || function(item) {
             for (var i = 0, l = this.length; i < l; i++) {
                 if (i in this && this[i] === item) return i;
@@ -73,13 +78,14 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
         Morris.Grid = function(_super) {
             __extends(Grid, _super);
             function Grid(options) {
+                this.resizeHandler = __bind(this.resizeHandler, this);
                 var _this = this;
                 if (typeof options.element === "string") {
                     this.el = $(document.getElementById(options.element));
                 } else {
                     this.el = $(options.element);
                 }
-                if (!(this.el != null) || this.el.length === 0) {
+                if (this.el == null || this.el.length === 0) {
                     throw new Error("Graph container element not found");
                 }
                 if (this.el.css("position") === "static") {
@@ -93,16 +99,32 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 this.elementWidth = null;
                 this.elementHeight = null;
                 this.dirty = false;
+                this.selectFrom = null;
                 if (this.init) {
                     this.init();
                 }
                 this.setData(this.options.data);
                 this.el.bind("mousemove", function(evt) {
-                    var offset;
+                    var left, offset, right, width, x;
                     offset = _this.el.offset();
-                    return _this.fire("hovermove", evt.pageX - offset.left, evt.pageY - offset.top);
+                    x = evt.pageX - offset.left;
+                    if (_this.selectFrom) {
+                        left = _this.data[_this.hitTest(Math.min(x, _this.selectFrom))]._x;
+                        right = _this.data[_this.hitTest(Math.max(x, _this.selectFrom))]._x;
+                        width = right - left;
+                        return _this.selectionRect.attr({
+                            x: left,
+                            width: width
+                        });
+                    } else {
+                        return _this.fire("hovermove", x, evt.pageY - offset.top);
+                    }
                 });
-                this.el.bind("mouseout", function(evt) {
+                this.el.bind("mouseleave", function(evt) {
+                    if (_this.selectFrom) {
+                        _this.selectionRect.hide();
+                        _this.selectFrom = null;
+                    }
                     return _this.fire("hoverout");
                 });
                 this.el.bind("touchstart touchmove touchend", function(evt) {
@@ -117,6 +139,31 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     offset = _this.el.offset();
                     return _this.fire("gridclick", evt.pageX - offset.left, evt.pageY - offset.top);
                 });
+                if (this.options.rangeSelect) {
+                    this.selectionRect = this.raphael.rect(0, 0, 0, this.el.innerHeight()).attr({
+                        fill: this.options.rangeSelectColor,
+                        stroke: false
+                    }).toBack().hide();
+                    this.el.bind("mousedown", function(evt) {
+                        var offset;
+                        offset = _this.el.offset();
+                        return _this.startRange(evt.pageX - offset.left);
+                    });
+                    this.el.bind("mouseup", function(evt) {
+                        var offset;
+                        offset = _this.el.offset();
+                        _this.endRange(evt.pageX - offset.left);
+                        return _this.fire("hovermove", evt.pageX - offset.left, evt.pageY - offset.top);
+                    });
+                }
+                if (this.options.resize) {
+                    $(window).bind("resize", function(evt) {
+                        if (_this.timeoutId != null) {
+                            window.clearTimeout(_this.timeoutId);
+                        }
+                        return _this.timeoutId = window.setTimeout(_this.resizeHandler, 100);
+                    });
+                }
                 if (this.postInit) {
                     this.postInit();
                 }
@@ -146,15 +193,18 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 goalLineColors: [ "#666633", "#999966", "#cc6666", "#663333" ],
                 events: [],
                 eventStrokeWidth: 1,
-                eventLineColors: [ "#005a04", "#ccffbb", "#3a5f0b", "#005502" ]
+                eventLineColors: [ "#005a04", "#ccffbb", "#3a5f0b", "#005502" ],
+                rangeSelect: null,
+                rangeSelectColor: "#eef",
+                resize: false
             };
             Grid.prototype.setData = function(data, redraw) {
-                var e, idx, index, maxGoal, minGoal, ret, row, step, total, y, ykey, ymax, ymin, yval;
+                var e, idx, index, maxGoal, minGoal, ret, row, step, total, y, ykey, ymax, ymin, yval, _ref;
                 if (redraw == null) {
                     redraw = true;
                 }
                 this.options.data = data;
-                if (!(data != null) || data.length === 0) {
+                if (data == null || data.length === 0) {
                     this.data = [];
                     this.raphael.clear();
                     if (this.hover != null) {
@@ -165,8 +215,8 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 ymax = this.cumulative ? 0 : null;
                 ymin = this.cumulative ? 0 : null;
                 if (this.options.goals.length > 0) {
-                    minGoal = Math.min.apply(null, this.options.goals);
-                    maxGoal = Math.max.apply(null, this.options.goals);
+                    minGoal = Math.min.apply(Math, this.options.goals);
+                    maxGoal = Math.max.apply(Math, this.options.goals);
                     ymin = ymin != null ? Math.min(ymin, minGoal) : minGoal;
                     ymax = ymax != null ? Math.max(ymax, maxGoal) : maxGoal;
                 }
@@ -175,7 +225,9 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     _results = [];
                     for (index = _i = 0, _len = data.length; _i < _len; index = ++_i) {
                         row = data[index];
-                        ret = {};
+                        ret = {
+                            src: row
+                        };
                         ret.label = row[this.options.xkey];
                         if (this.options.parseTime) {
                             ret.x = Morris.parseDate(ret.label);
@@ -236,19 +288,23 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 this.xmin = this.data[0].x;
                 this.xmax = this.data[this.data.length - 1].x;
                 this.events = [];
-                if (this.options.parseTime && this.options.events.length > 0) {
-                    this.events = function() {
-                        var _i, _len, _ref, _results;
-                        _ref = this.options.events;
-                        _results = [];
-                        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                            e = _ref[_i];
-                            _results.push(Morris.parseDate(e));
-                        }
-                        return _results;
-                    }.call(this);
-                    this.xmax = Math.max(this.xmax, Math.max.apply(null, this.events));
-                    this.xmin = Math.min(this.xmin, Math.min.apply(null, this.events));
+                if (this.options.events.length > 0) {
+                    if (this.options.parseTime) {
+                        this.events = function() {
+                            var _i, _len, _ref, _results;
+                            _ref = this.options.events;
+                            _results = [];
+                            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                                e = _ref[_i];
+                                _results.push(Morris.parseDate(e));
+                            }
+                            return _results;
+                        }.call(this);
+                    } else {
+                        this.events = this.options.events;
+                    }
+                    this.xmax = Math.max(this.xmax, Math.max.apply(Math, this.events));
+                    this.xmin = Math.min(this.xmin, Math.min.apply(Math, this.events));
                 }
                 if (this.xmin === this.xmax) {
                     this.xmin -= 1;
@@ -262,7 +318,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     }
                     this.ymax += 1;
                 }
-                if (this.options.axes === true || this.options.grid === true) {
+                if ((_ref = this.options.axes) === true || _ref === "both" || _ref === "y" || this.options.grid === true) {
                     if (this.options.ymax === this.gridDefaults.ymax && this.options.ymin === this.gridDefaults.ymin) {
                         this.grid = this.autoGridLines(this.ymin, this.ymax, this.options.numLines);
                         this.ymin = Math.min(this.ymin, this.grid[0]);
@@ -270,9 +326,9 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     } else {
                         step = (this.ymax - this.ymin) / (this.options.numLines - 1);
                         this.grid = function() {
-                            var _i, _ref, _ref1, _results;
+                            var _i, _ref1, _ref2, _results;
                             _results = [];
-                            for (y = _i = _ref = this.ymin, _ref1 = this.ymax; _ref <= _ref1 ? _i <= _ref1 : _i >= _ref1; y = _i += step) {
+                            for (y = _i = _ref1 = this.ymin, _ref2 = this.ymax; step > 0 ? _i <= _ref2 : _i >= _ref2; y = _i += step) {
                                 _results.push(y);
                             }
                             return _results;
@@ -330,7 +386,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     grid = function() {
                         var _i, _results;
                         _results = [];
-                        for (y = _i = gmin; gmin <= gmax ? _i <= gmax : _i >= gmax; y = _i += step) {
+                        for (y = _i = gmin; step > 0 ? _i <= gmax : _i >= gmax; y = _i += step) {
                             _results.push(parseFloat(y.toFixed(1 - smag)));
                         }
                         return _results;
@@ -339,7 +395,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     grid = function() {
                         var _i, _results;
                         _results = [];
-                        for (y = _i = gmin; gmin <= gmax ? _i <= gmax : _i >= gmax; y = _i += step) {
+                        for (y = _i = gmin; step > 0 ? _i <= gmax : _i >= gmax; y = _i += step) {
                             _results.push(y);
                         }
                         return _results;
@@ -348,7 +404,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 return grid;
             };
             Grid.prototype._calc = function() {
-                var bottomOffsets, gridLine, h, i, w, yLabelWidths;
+                var bottomOffsets, gridLine, h, i, w, yLabelWidths, _ref, _ref1;
                 w = this.el.width();
                 h = this.el.height();
                 if (this.elementWidth !== w || this.elementHeight !== h || this.dirty) {
@@ -359,22 +415,24 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     this.right = this.elementWidth - this.options.padding;
                     this.top = this.options.padding;
                     this.bottom = this.elementHeight - this.options.padding;
-                    if (this.options.axes) {
+                    if ((_ref = this.options.axes) === true || _ref === "both" || _ref === "y") {
                         yLabelWidths = function() {
-                            var _i, _len, _ref, _results;
-                            _ref = this.grid;
+                            var _i, _len, _ref1, _results;
+                            _ref1 = this.grid;
                             _results = [];
-                            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                                gridLine = _ref[_i];
+                            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                                gridLine = _ref1[_i];
                                 _results.push(this.measureText(this.yAxisFormat(gridLine)).width);
                             }
                             return _results;
                         }.call(this);
                         this.left += Math.max.apply(Math, yLabelWidths);
+                    }
+                    if ((_ref1 = this.options.axes) === true || _ref1 === "both" || _ref1 === "x") {
                         bottomOffsets = function() {
-                            var _i, _ref, _results;
+                            var _i, _ref2, _results;
                             _results = [];
-                            for (i = _i = 0, _ref = this.data.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+                            for (i = _i = 0, _ref2 = this.data.length; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; i = 0 <= _ref2 ? ++_i : --_i) {
                                 _results.push(this.measureText(this.data[i].text, -this.options.xLabelAngle).height);
                             }
                             return _results;
@@ -430,24 +488,17 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     return "" + this.options.preUnits + Morris.commas(label) + this.options.postUnits;
                 }
             };
-            Grid.prototype.updateHover = function(x, y) {
-                var hit, _ref;
-                hit = this.hitTest(x, y);
-                if (hit != null) {
-                    return (_ref = this.hover).update.apply(_ref, hit);
-                }
-            };
             Grid.prototype.drawGrid = function() {
-                var lineY, y, _i, _len, _ref, _results;
-                if (this.options.grid === false && this.options.axes === false) {
+                var lineY, y, _i, _len, _ref, _ref1, _ref2, _results;
+                if (this.options.grid === false && (_ref = this.options.axes) !== true && _ref !== "both" && _ref !== "y") {
                     return;
                 }
-                _ref = this.grid;
+                _ref1 = this.grid;
                 _results = [];
-                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                    lineY = _ref[_i];
+                for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                    lineY = _ref1[_i];
                     y = this.transY(lineY);
-                    if (this.options.axes) {
+                    if ((_ref2 = this.options.axes) === true || _ref2 === "both" || _ref2 === "y") {
                         this.drawYAxisLabel(this.left - this.options.padding / 2, y, this.yAxisFormat(lineY));
                     }
                     if (this.options.grid) {
@@ -491,6 +542,31 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
             };
             Grid.prototype.drawGridLine = function(path) {
                 return this.raphael.path(path).attr("stroke", this.options.gridLineColor).attr("stroke-width", this.options.gridStrokeWidth);
+            };
+            Grid.prototype.startRange = function(x) {
+                this.hover.hide();
+                this.selectFrom = x;
+                return this.selectionRect.attr({
+                    x: x,
+                    width: 0
+                }).show();
+            };
+            Grid.prototype.endRange = function(x) {
+                var end, start;
+                if (this.selectFrom) {
+                    start = Math.min(this.selectFrom, x);
+                    end = Math.max(this.selectFrom, x);
+                    this.options.rangeSelect.call(this.el, {
+                        start: this.data[this.hitTest(start)].x,
+                        end: this.data[this.hitTest(end)].x
+                    });
+                    return this.selectFrom = null;
+                }
+            };
+            Grid.prototype.resizeHandler = function() {
+                this.timeoutId = null;
+                this.raphael.setSize(this.el.width(), this.el.height());
+                return this.redraw();
             };
             return Grid;
         }(Morris.EventEmitter);
@@ -615,12 +691,6 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 Line.__super__.constructor.call(this, options);
             }
             Line.prototype.init = function() {
-                this.pointGrow = Raphael.animation({
-                    r: this.options.pointSize + 3
-                }, 25, "linear");
-                this.pointShrink = Raphael.animation({
-                    r: this.options.pointSize
-                }, 25, "linear");
                 if (this.options.hideHover !== "always") {
                     this.hover = new Morris.Hover({
                         parent: this.el
@@ -634,7 +704,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 lineWidth: 3,
                 pointSize: 4,
                 lineColors: [ "#0b62a4", "#7A92A3", "#4da74d", "#afd8f8", "#edc240", "#cb4b4b", "#9440ed" ],
-                pointWidths: [ 1 ],
+                pointStrokeWidths: [ 1 ],
                 pointStrokeColors: [ "#ffffff" ],
                 pointFillColors: [],
                 smooth: true,
@@ -669,7 +739,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                         }
                         return _results1;
                     }.call(this);
-                    _results.push(row._ymax = Math.min.apply(null, [ this.bottom ].concat(function() {
+                    _results.push(row._ymax = Math.min.apply(Math, [ this.bottom ].concat(function() {
                         var _j, _len1, _ref1, _results1;
                         _ref1 = row._y;
                         _results1 = [];
@@ -684,7 +754,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 }
                 return _results;
             };
-            Line.prototype.hitTest = function(x, y) {
+            Line.prototype.hitTest = function(x) {
                 var index, r, _i, _len, _ref;
                 if (this.data.length === 0) {
                     return null;
@@ -700,12 +770,12 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
             };
             Line.prototype.onGridClick = function(x, y) {
                 var index;
-                index = this.hitTest(x, y);
-                return this.fire("click", index, this.options.data[index], x, y);
+                index = this.hitTest(x);
+                return this.fire("click", index, this.data[index].src, x, y);
             };
             Line.prototype.onHoverMove = function(x, y) {
                 var index;
-                index = this.hitTest(x, y);
+                index = this.hitTest(x);
                 return this.displayHoverForRow(index);
             };
             Line.prototype.onHoverOut = function() {
@@ -733,7 +803,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     content += "<div class='morris-hover-point' style='color: " + this.colorFor(row, j, "label") + "'>\n  " + this.options.labels[j] + ":\n  " + this.yLabelFormat(y) + "\n</div>";
                 }
                 if (typeof this.options.hoverCallback === "function") {
-                    content = this.options.hoverCallback(index, this.options, content);
+                    content = this.options.hoverCallback(index, this.options, content, row.src);
                 }
                 return [ content, row._x, row._ymax ];
             };
@@ -743,7 +813,8 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     var _i, _ref, _ref1, _results;
                     _results = [];
                     for (i = _i = 0, _ref = this.options.ykeys.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-                        smooth = this.options.smooth === true || (_ref1 = this.options.ykeys[i], __indexOf.call(this.options.smooth, _ref1) >= 0);
+                        smooth = typeof this.options.smooth === "boolean" ? this.options.smooth : (_ref1 = this.options.ykeys[i], 
+                        __indexOf.call(this.options.smooth, _ref1) >= 0);
                         coords = function() {
                             var _j, _len, _ref2, _results1;
                             _ref2 = this.data;
@@ -782,7 +853,8 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 }.call(this);
             };
             Line.prototype.draw = function() {
-                if (this.options.axes) {
+                var _ref;
+                if ((_ref = this.options.axes) === true || _ref === "both" || _ref === "x") {
                     this.drawXAxis();
                 }
                 this.drawSeries();
@@ -807,7 +879,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                         label.transform("t" + offset + ",0...");
                     }
                     labelBox = label.getBBox();
-                    if ((!(prevLabelMargin != null) || prevLabelMargin >= labelBox.x + labelBox.width || prevAngleMargin != null && prevAngleMargin >= labelBox.x) && labelBox.x >= 0 && labelBox.x + labelBox.width < _this.el.width()) {
+                    if ((prevLabelMargin == null || prevLabelMargin >= labelBox.x + labelBox.width || prevAngleMargin != null && prevAngleMargin >= labelBox.x) && labelBox.x >= 0 && labelBox.x + labelBox.width < _this.el.width()) {
                         if (_this.options.xLabelAngle !== 0) {
                             margin = 1.25 * _this.options.gridTextSize / Math.sin(_this.options.xLabelAngle * Math.PI / 180);
                             prevAngleMargin = labelBox.x - margin;
@@ -864,7 +936,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     row = _ref[_i];
                     circle = null;
                     if (row._y[index] != null) {
-                        circle = this.drawLinePoint(row._x, row._y[index], this.options.pointSize, this.colorFor(row, index, "point"), index);
+                        circle = this.drawLinePoint(row._x, row._y[index], this.colorFor(row, index, "point"), index);
                     }
                     _results.push(this.seriesPoints[index].push(circle));
                 }
@@ -874,7 +946,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 var path;
                 path = this.paths[index];
                 if (path !== null) {
-                    return this.drawLinePath(path, this.colorFor(null, index, "line"));
+                    return this.drawLinePath(path, this.colorFor(null, index, "line"), index);
                 }
             };
             Line.createPath = function(coords, smooth, bottom) {
@@ -947,14 +1019,14 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 if (this.prevHilight !== null && this.prevHilight !== index) {
                     for (i = _i = 0, _ref = this.seriesPoints.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
                         if (this.seriesPoints[i][this.prevHilight]) {
-                            this.seriesPoints[i][this.prevHilight].animate(this.pointShrink);
+                            this.seriesPoints[i][this.prevHilight].animate(this.pointShrinkSeries(i));
                         }
                     }
                 }
                 if (index !== null && this.prevHilight !== index) {
                     for (i = _j = 0, _ref1 = this.seriesPoints.length - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
                         if (this.seriesPoints[i][index]) {
-                            this.seriesPoints[i][index].animate(this.pointGrow);
+                            this.seriesPoints[i][index].animate(this.pointGrowSeries(i));
                         }
                     }
                 }
@@ -972,17 +1044,41 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
             Line.prototype.drawXAxisLabel = function(xPos, yPos, text) {
                 return this.raphael.text(xPos, yPos, text).attr("font-size", this.options.gridTextSize).attr("font-family", this.options.gridTextFamily).attr("font-weight", this.options.gridTextWeight).attr("fill", this.options.gridTextColor);
             };
-            Line.prototype.drawLinePath = function(path, lineColor) {
-                return this.raphael.path(path).attr("stroke", lineColor).attr("stroke-width", this.options.lineWidth);
+            Line.prototype.drawLinePath = function(path, lineColor, lineIndex) {
+                return this.raphael.path(path).attr("stroke", lineColor).attr("stroke-width", this.lineWidthForSeries(lineIndex));
             };
-            Line.prototype.drawLinePoint = function(xPos, yPos, size, pointColor, lineIndex) {
-                return this.raphael.circle(xPos, yPos, size).attr("fill", pointColor).attr("stroke-width", this.strokeWidthForSeries(lineIndex)).attr("stroke", this.strokeForSeries(lineIndex));
+            Line.prototype.drawLinePoint = function(xPos, yPos, pointColor, lineIndex) {
+                return this.raphael.circle(xPos, yPos, this.pointSizeForSeries(lineIndex)).attr("fill", pointColor).attr("stroke-width", this.pointStrokeWidthForSeries(lineIndex)).attr("stroke", this.pointStrokeColorForSeries(lineIndex));
             };
-            Line.prototype.strokeWidthForSeries = function(index) {
-                return this.options.pointWidths[index % this.options.pointWidths.length];
+            Line.prototype.pointStrokeWidthForSeries = function(index) {
+                return this.options.pointStrokeWidths[index % this.options.pointStrokeWidths.length];
             };
-            Line.prototype.strokeForSeries = function(index) {
+            Line.prototype.pointStrokeColorForSeries = function(index) {
                 return this.options.pointStrokeColors[index % this.options.pointStrokeColors.length];
+            };
+            Line.prototype.lineWidthForSeries = function(index) {
+                if (this.options.lineWidth instanceof Array) {
+                    return this.options.lineWidth[index % this.options.lineWidth.length];
+                } else {
+                    return this.options.lineWidth;
+                }
+            };
+            Line.prototype.pointSizeForSeries = function(index) {
+                if (this.options.pointSize instanceof Array) {
+                    return this.options.pointSize[index % this.options.pointSize.length];
+                } else {
+                    return this.options.pointSize;
+                }
+            };
+            Line.prototype.pointGrowSeries = function(index) {
+                return Raphael.animation({
+                    r: this.pointSizeForSeries(index) + 3
+                }, 25, "linear");
+            };
+            Line.prototype.pointShrinkSeries = function(index) {
+                return Raphael.animation({
+                    r: this.pointSizeForSeries(index)
+                }, 25, "linear");
             };
             return Line;
         }(Morris.Grid);
@@ -1085,6 +1181,18 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     return d.setMonth(d.getMonth() + 1);
                 }
             },
+            week: {
+                span: 6048e5,
+                start: function(d) {
+                    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+                },
+                fmt: function(d) {
+                    return "" + d.getFullYear() + "-" + Morris.pad2(d.getMonth() + 1) + "-" + Morris.pad2(d.getDate());
+                },
+                incr: function(d) {
+                    return d.setDate(d.getDate() + 7);
+                }
+            },
             day: {
                 span: 864e5,
                 start: function(d) {
@@ -1109,7 +1217,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
             "5sec": secondsSpecHelper(5),
             second: secondsSpecHelper(1)
         };
-        Morris.AUTO_LABEL_ORDER = [ "decade", "year", "month", "day", "hour", "30min", "15min", "10min", "5min", "minute", "30sec", "15sec", "10sec", "5sec", "second" ];
+        Morris.AUTO_LABEL_ORDER = [ "decade", "year", "month", "week", "day", "hour", "30min", "15min", "10min", "5min", "minute", "30sec", "15sec", "10sec", "5sec", "second" ];
         Morris.Area = function(_super) {
             var areaDefaults;
             __extends(Area, _super);
@@ -1199,7 +1307,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 return Raphael.hsl(color.h, this.options.behaveLikeLine ? color.s * .9 : color.s * .75, Math.min(.98, this.options.behaveLikeLine ? color.l * 1.2 : color.l * 1.25));
             };
             Area.prototype.drawFilledPath = function(path, fill) {
-                return this.raphael.path(path).attr("fill", fill).attr("fill-opacity", this.options.fillOpacity).attr("stroke-width", 0);
+                return this.raphael.path(path).attr("fill", fill).attr("fill-opacity", this.options.fillOpacity).attr("stroke", "none");
             };
             return Area;
         }(Morris.Line);
@@ -1231,6 +1339,8 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 barSizeRatio: .75,
                 barGap: 3,
                 barColors: [ "#0b62a4", "#7a92a3", "#4da74d", "#afd8f8", "#edc240", "#cb4b4b", "#9440ed" ],
+                barOpacity: 1,
+                barRadius: [ 0, 0, 0, 0 ],
                 xLabelMargin: 50
             };
             Bar.prototype.calc = function() {
@@ -1265,14 +1375,15 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 return _results;
             };
             Bar.prototype.draw = function() {
-                if (this.options.axes) {
+                var _ref;
+                if ((_ref = this.options.axes) === true || _ref === "both" || _ref === "x") {
                     this.drawXAxis();
                 }
                 return this.drawSeries();
             };
             Bar.prototype.drawXAxis = function() {
                 var i, label, labelBox, margin, offset, prevAngleMargin, prevLabelMargin, row, textBox, ypos, _i, _ref, _results;
-                ypos = this.bottom + this.options.padding / 2;
+                ypos = this.bottom + (this.options.xAxisLabelTopPadding || this.options.padding / 2);
                 prevLabelMargin = null;
                 prevAngleMargin = null;
                 _results = [];
@@ -1287,7 +1398,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                         offset = -.5 * textBox.width * Math.cos(this.options.xLabelAngle * Math.PI / 180);
                         label.transform("t" + offset + ",0...");
                     }
-                    if ((!(prevLabelMargin != null) || prevLabelMargin >= labelBox.x + labelBox.width || prevAngleMargin != null && prevAngleMargin >= labelBox.x) && labelBox.x >= 0 && labelBox.x + labelBox.width < this.el.width()) {
+                    if ((prevLabelMargin == null || prevLabelMargin >= labelBox.x + labelBox.width || prevAngleMargin != null && prevAngleMargin >= labelBox.x) && labelBox.x >= 0 && labelBox.x + labelBox.width < this.el.width()) {
                         if (this.options.xLabelAngle !== 0) {
                             margin = 1.25 * this.options.gridTextSize / Math.sin(this.options.xLabelAngle * Math.PI / 180);
                             prevAngleMargin = labelBox.x - margin;
@@ -1300,11 +1411,15 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 return _results;
             };
             Bar.prototype.drawSeries = function() {
-                var barWidth, bottom, groupWidth, idx, lastTop, left, leftPadding, numBars, row, sidx, size, top, ypos, zeroPos;
+                var barWidth, bottom, groupWidth, idx, lastTop, left, leftPadding, numBars, row, sidx, size, spaceLeft, top, ypos, zeroPos;
                 groupWidth = this.width / this.options.data.length;
                 numBars = this.options.stacked != null ? 1 : this.options.ykeys.length;
                 barWidth = (groupWidth * this.options.barSizeRatio - this.options.barGap * (numBars - 1)) / numBars;
-                leftPadding = groupWidth * (1 - this.options.barSizeRatio) / 2;
+                if (this.options.barSize) {
+                    barWidth = Math.min(barWidth, this.options.barSize);
+                }
+                spaceLeft = groupWidth - barWidth * numBars - this.options.barGap * (numBars - 1);
+                leftPadding = spaceLeft / 2;
                 zeroPos = this.ymin <= 0 && this.ymax >= 0 ? this.transY(0) : null;
                 return this.bars = function() {
                     var _i, _len, _ref, _results;
@@ -1335,7 +1450,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                                     if (this.options.stacked) {
                                         top -= lastTop;
                                     }
-                                    this.drawBar(left, top, barWidth, size, this.colorFor(row, sidx, "bar"));
+                                    this.drawBar(left, top, barWidth, size, this.colorFor(row, sidx, "bar"), this.options.barOpacity, this.options.barRadius);
                                     _results1.push(lastTop += size);
                                 } else {
                                     _results1.push(null);
@@ -1365,7 +1480,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     return this.options.barColors[sidx % this.options.barColors.length];
                 }
             };
-            Bar.prototype.hitTest = function(x, y) {
+            Bar.prototype.hitTest = function(x) {
                 if (this.data.length === 0) {
                     return null;
                 }
@@ -1374,12 +1489,12 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
             };
             Bar.prototype.onGridClick = function(x, y) {
                 var index;
-                index = this.hitTest(x, y);
-                return this.fire("click", index, this.options.data[index], x, y);
+                index = this.hitTest(x);
+                return this.fire("click", index, this.data[index].src, x, y);
             };
             Bar.prototype.onHoverMove = function(x, y) {
                 var index, _ref;
-                index = this.hitTest(x, y);
+                index = this.hitTest(x);
                 return (_ref = this.hover).update.apply(_ref, this.hoverContentForRow(index));
             };
             Bar.prototype.onHoverOut = function() {
@@ -1397,7 +1512,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     content += "<div class='morris-hover-point' style='color: " + this.colorFor(row, j, "label") + "'>\n  " + this.options.labels[j] + ":\n  " + this.yLabelFormat(y) + "\n</div>";
                 }
                 if (typeof this.options.hoverCallback === "function") {
-                    content = this.options.hoverCallback(index, this.options, content);
+                    content = this.options.hoverCallback(index, this.options, content, row.src);
                 }
                 x = this.left + (index + .5) * this.width / this.data.length;
                 return [ content, x ];
@@ -1406,8 +1521,21 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 var label;
                 return label = this.raphael.text(xPos, yPos, text).attr("font-size", this.options.gridTextSize).attr("font-family", this.options.gridTextFamily).attr("font-weight", this.options.gridTextWeight).attr("fill", this.options.gridTextColor);
             };
-            Bar.prototype.drawBar = function(xPos, yPos, width, height, barColor) {
-                return this.raphael.rect(xPos, yPos, width, height).attr("fill", barColor).attr("stroke-width", 0);
+            Bar.prototype.drawBar = function(xPos, yPos, width, height, barColor, opacity, radiusArray) {
+                var maxRadius, path;
+                maxRadius = Math.max.apply(Math, radiusArray);
+                if (maxRadius === 0 || maxRadius > height) {
+                    path = this.raphael.rect(xPos, yPos, width, height);
+                } else {
+                    path = this.raphael.path(this.roundedRect(xPos, yPos, width, height, radiusArray));
+                }
+                return path.attr("fill", barColor).attr("fill-opacity", opacity).attr("stroke", "none");
+            };
+            Bar.prototype.roundedRect = function(x, y, w, h, r) {
+                if (r == null) {
+                    r = [ 0, 0, 0, 0 ];
+                }
+                return [ "M", x, r[0] + y, "Q", x, y, x + r[0], y, "L", x + w - r[1], y, "Q", x + w, y, x + w, y + r[1], "L", x + w, y + h - r[2], "Q", x + w, y + h, x + w - r[2], y + h, "L", x + r[3], y + h, "Q", x, y + h, x, y + h - r[3], "Z" ];
             };
             return Bar;
         }(Morris.Grid);
@@ -1417,44 +1545,43 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 colors: [ "#0B62A4", "#3980B5", "#679DC6", "#95BBD7", "#B0CCE1", "#095791", "#095085", "#083E67", "#052C48", "#042135" ],
                 backgroundColor: "#FFFFFF",
                 labelColor: "#000000",
-                formatter: Morris.commas
+                formatter: Morris.commas,
+                resize: false
             };
             function Donut(options) {
+                this.resizeHandler = __bind(this.resizeHandler, this);
                 this.select = __bind(this.select, this);
                 this.click = __bind(this.click, this);
-                var row;
+                var _this = this;
                 if (!(this instanceof Morris.Donut)) {
                     return new Morris.Donut(options);
                 }
+                this.options = $.extend({}, this.defaults, options);
                 if (typeof options.element === "string") {
                     this.el = $(document.getElementById(options.element));
                 } else {
                     this.el = $(options.element);
                 }
-                this.options = $.extend({}, this.defaults, options);
                 if (this.el === null || this.el.length === 0) {
                     throw new Error("Graph placeholder not found.");
                 }
                 if (options.data === void 0 || options.data.length === 0) {
                     return;
                 }
-                this.data = options.data;
-                this.values = function() {
-                    var _i, _len, _ref, _results;
-                    _ref = this.data;
-                    _results = [];
-                    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                        row = _ref[_i];
-                        _results.push(parseFloat(row.value));
-                    }
-                    return _results;
-                }.call(this);
-                this.redraw();
+                this.raphael = new Raphael(this.el[0]);
+                if (this.options.resize) {
+                    $(window).bind("resize", function(evt) {
+                        if (_this.timeoutId != null) {
+                            window.clearTimeout(_this.timeoutId);
+                        }
+                        return _this.timeoutId = window.setTimeout(_this.resizeHandler, 100);
+                    });
+                }
+                this.setData(options.data);
             }
             Donut.prototype.redraw = function() {
                 var C, cx, cy, i, idx, last, max_value, min, next, seg, total, value, w, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
-                this.el.empty();
-                this.raphael = new Raphael(this.el[0]);
+                this.raphael.clear();
                 cx = this.el.width() / 2;
                 cy = this.el.height() / 2;
                 w = (Math.min(cx, cy) - 10) / 3;
@@ -1473,7 +1600,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
                     value = _ref1[i];
                     next = last + min + C * (value / total);
-                    seg = new Morris.DonutSegment(cx, cy, w * 2, w, last, next, this.options.colors[idx % this.options.colors.length], this.options.backgroundColor, idx, this.raphael);
+                    seg = new Morris.DonutSegment(cx, cy, w * 2, w, last, next, this.data[i].color || this.options.colors[idx % this.options.colors.length], this.options.backgroundColor, idx, this.raphael);
                     seg.render();
                     this.segments.push(seg);
                     seg.on("hover", this.select);
@@ -1483,16 +1610,7 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                 }
                 this.text1 = this.drawEmptyDonutLabel(cx, cy - 10, this.options.labelColor, 15, 800);
                 this.text2 = this.drawEmptyDonutLabel(cx, cy + 10, this.options.labelColor, 14);
-                max_value = Math.max.apply(null, function() {
-                    var _k, _len2, _ref2, _results;
-                    _ref2 = this.values;
-                    _results = [];
-                    for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-                        value = _ref2[_k];
-                        _results.push(value);
-                    }
-                    return _results;
-                }.call(this));
+                max_value = Math.max.apply(Math, this.values);
                 idx = 0;
                 _ref2 = this.values;
                 _results = [];
@@ -1505,6 +1623,21 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     _results.push(idx += 1);
                 }
                 return _results;
+            };
+            Donut.prototype.setData = function(data) {
+                var row;
+                this.data = data;
+                this.values = function() {
+                    var _i, _len, _ref, _results;
+                    _ref = this.data;
+                    _results = [];
+                    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                        row = _ref[_i];
+                        _results.push(parseFloat(row.value));
+                    }
+                    return _results;
+                }.call(this);
+                return this.redraw();
             };
             Donut.prototype.click = function(idx) {
                 return this.fire("click", idx, this.data[idx]);
@@ -1553,6 +1686,11 @@ define("gallery/morris/0.4.3/morris-debug", [ "$-debug", "gallery/raphael/2.1.0/
                     text.attr("font-weight", fontWeight);
                 }
                 return text;
+            };
+            Donut.prototype.resizeHandler = function() {
+                this.timeoutId = null;
+                this.raphael.setSize(this.el.width(), this.el.height());
+                return this.redraw();
             };
             return Donut;
         }(Morris.EventEmitter);

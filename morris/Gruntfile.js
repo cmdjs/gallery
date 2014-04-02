@@ -19,17 +19,20 @@ module.exports = function(grunt) {
             ].join('\n');
           }
         },
-        url: 'https://raw.github.com/oesmith/morris.js/<%= pkg.version %>/morris.js',
+        url: 'https://raw.githubusercontent.com/morrisjs/morris.js/<%= pkg.version %>/morris.js',
         name: 'morris.js'
       },
 
       css: {
-        url: 'https://raw.github.com/oesmith/morris.js/<%= pkg.version %>/morris.css',
+        url: 'https://raw.githubusercontent.com/morrisjs/morris.js/<%= pkg.version %>/morris.css',
         name: 'morris.css'
       }
     }
   });
 
+  grunt.loadGlobalTasks('spm-build');
+  grunt.util._.merge(grunt.config.data, require('spm-build').config);
+
   grunt.loadTasks('../_tasks/download/tasks');
-  grunt.registerTask('default', ['download']);
+  grunt.registerTask('build', ['download', 'spm-build']);
 };

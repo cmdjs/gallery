@@ -1,9 +1,10 @@
 {
   "family": "gallery",
   "name": "morris",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "homepage": "http://morrisjs.github.com/morris.js/",
   "description": "Easy, pretty charts",
+"license": "BSD-2-Clause",
   "author": {
     "name": "Olly Smith",
     "email": "olly@oesmith.co.uk"
@@ -18,7 +19,7 @@
   "spm": {
     "alias": {
       "$": "$",
-      "raphael": "gallery/raphael/2.1.0/raphael"
+      "raphael": "gallery/raphael/2.1.2/raphael"
     },
     "output": [
       "morris.js",
