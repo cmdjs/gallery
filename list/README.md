@@ -3,6 +3,8 @@ Perfect library for adding **search**, **sort**, **filters** and **flexibility**
 **tables**, **lists** and various HTML elements. Built to be invisible and work on existing HTML.
 Really simple and easy to use!
 
+[![Donate](https://s3.amazonaws.com/listjs/donate-coffee.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7ZGHV75VSD2E)
+
 ### Core idea
 - Simple and invisible
 - Easy to apply to existing HTML
@@ -13,11 +15,11 @@ Really simple and easy to use!
 
 ### Features
 - Works both lists, tables and almost anything else. E.g. `<div>`,`<ul>`,`<table>`, etc.
-- Search [Read more ›](http://listjs.com/docs/list-api#search)
-- Sort [Read more ›](http://listjs.com/docs/list-api#sort)
-- Filter [Read more ›](http://listjs.com/docs/list-api#filter)
-- Simple templating system that adds possibility to add, edit, remove items [Read more ›](http://listjs.com/docs/list-api#add)
-- Plugins [Read more ›](http://listjs.com/docs/plugins)
+- Search [Read more â€º](http://listjs.com/docs/list-api#search)
+- Sort [Read more â€º](http://listjs.com/docs/list-api#sort)
+- Filter [Read more â€º](http://listjs.com/docs/list-api#filter)
+- Simple templating system that adds possibility to add, edit, remove items [Read more â€º](http://listjs.com/docs/list-api#add)
+- Plugins [Read more â€º](http://listjs.com/docs/plugins)
 - Support for Chrome, Safari, Firefox, IE6+
 
 ### Demo / Examples
@@ -42,14 +44,12 @@ Really simple and easy to use!
 - [Build your own](http://listjs.com/docs/plugins/build)
 
 ### Known issues
-- Sorting fails with `åä`, thinking that `ä` is before `å`.
-- There should not be a limit for how many items that could be parsed.
-- Class `asc` and `desc` should be removed as soon as the sorting breaks.
+- Sorting fails with some UTF8 characters. Example: `Ã¥Ã¤`, thinking that `Ã¤` is before `Ã¥`.
 - Tables row items can't be created with the `{ item: '<html>' }`-method.
 
 
 ## Contributors
-* [javve](https://github.com/javve) / [Jonny Strömberg](http://jonnystromberg.com)
+* [javve](https://github.com/javve) / [Jonny StrÃ¶mberg](http://jonnystromberg.com)
 * [lusentis](https://github.com/lusentis) / [Simone Lusenti](http://www.plasticpanda.com)
 * [dancrew32](https://github.com/dancrew32) / [Dan Masquelier](http://danmasq.com)
 * [himynameisjonas](https://github.com/himynameisjonas) / [Jonas Forsberg](http://jonasforsberg.se)
@@ -59,7 +59,7 @@ Really simple and easy to use!
 * [francescolaffi](https://github.com/francescolaffi)
 * [ryantanner](https://github.com/ryantanner)
 * [idlefella](https://github.com/idlefella)
-* [julienbechade](https://github.com/julienbechade) / [Julien Béchade/](http://julienbechade.com/)
+* [julienbechade](https://github.com/julienbechade) / [Julien BÃ©chade/](http://julienbechade.com/)
 * [matthewheston](https://github.com/matthewheston)
 * [gvido](https://github.com/gvido) / Gvido Glazers
 * [karlwestin](https://github.com/karlwestin) / [Karl Westin](http://karlwestin.com)
@@ -67,11 +67,23 @@ Really simple and easy to use!
 * [dancrew32](https://github.com/dancrew32) / [Dan Masquelier](http://danmasq.com/)
 * [jkeyes](https://github.com/jkeyes) / [John Keyes](http://keyes.ie/)
 * [samosad](https://github.com/samosad) / Alexey Tabakman
+* [Page-](https://github.com/Page-)
+
+Built with [Component](https://github.com/component/component) which is created by [TJ Holowaychuk](https://github.com/visionmedia).
 
 ### Want to contribute?
 - Read more at [listjs.com/overview/contribute](http://listjs.com/overview/contribute)
 
+### Creator
+|               | Jonny StrÃ¶mberg [@javve](http://twitter.com/javve)            |
+| ------------- | ------------- |
+| ![Image of Jonny](http://listjs.com/images/graphics/javve.jpg) | I hope you like the lib. Iâ€™ve put a lot of hours into it! Feel free to follow me on [Twitter](http://twitter.com/javve) for news and [donate a coffee](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=M7ZGHV75VSD2E) for good karma ;)  
+
+
 ## License (MIT)
 
-Copyright (c) 2012 Jonny Strömberg <[jonny.stromberg@gmail.com](jonny.stromberg@gmail.com)>
+Copyright (c) 2012 Jonny StrÃ¶mberg <[jonny.stromberg@gmail.com](jonny.stromberg@gmail.com)>
 [http://jonnystromberg.com](http://jonnystromberg.com)
+
+[![Views in the last 24 hours](https://sourcegraph.com/api/repos/github.com/javve/list.js/counters/views-24h.png)](https://sourcegraph.com/github.com/javve/list.js)
+
