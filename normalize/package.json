@@ -1,7 +1,7 @@
 {
   "name": "normalize",
   "family": "gallery",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "author": "Nicolas Gallagher",
   "homepage": "http://necolas.github.io/normalize.css",
   "description": "A modern, HTML5-ready alternative to CSS resets",
