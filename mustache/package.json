@@ -1,7 +1,7 @@
 {
   "name": "mustache",
   "family": "gallery",
-  "version": "0.7.2",
+  "version": "0.8.1",
   "package": "https://raw.github.com/janl/mustache.js/master/package.json",
   "description": "Logic-less {{mustache}} templates with JavaScript",
   "author": "mustache.js Authors <http://github.com/janl/mustache.js>",
