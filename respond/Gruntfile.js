@@ -11,7 +11,7 @@ module.exports = function(grunt) {
                 footer: '});'
             },
             src: {
-                url: 'https://raw.github.com/scottjehl/Respond/<%= pkg.version%>/respond.src.js',
+                url: 'https://raw.github.com/scottjehl/Respond/<%= pkg.version%>/dest/respond.src.js',
                 name: 'respond.js'
             }
         }
