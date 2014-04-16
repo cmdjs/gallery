@@ -1,7 +1,7 @@
 {
   "name": "moment",
   "family": "gallery",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "package": "https://raw.github.com/timrwood/moment/master/package.json",
   "description": "Parse, manipulate, and display dates.",
   "homepage": "http://momentjs.com",
