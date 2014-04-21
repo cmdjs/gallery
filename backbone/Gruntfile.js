@@ -14,7 +14,7 @@ module.exports = function(grunt) {
             'var previousJQuery = this.jQuery;',
             "this._ = require('underscore');",
             "this.jQuery = require('$');",
-            code,
+            code.replace("factory(root, exports, _)", "factory(root, exports, _, jQuery)"),
             "this._ = previousUnderscore;",
             "this.jQuery = previousJQuery;",
             "});"
@@ -22,7 +22,7 @@ module.exports = function(grunt) {
         }
       },
       src: {
-        url: 'https://raw.github.com/documentcloud/backbone/<%= pkg.version %>/backbone.js',
+        url: 'https://raw.github.com/jashkenas/backbone/<%= pkg.version %>/backbone.js',
         name: 'backbone.js'
       }
     }
