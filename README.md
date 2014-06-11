@@ -15,7 +15,7 @@ npm install spm@2.x -g -f
 Fork [cmdjs/gallery](https://github.com/cmdjs/gallery) 到自己的仓库中, 然后把 fork 后的仓库克隆到本地, 如:
 
 ```
-git clone git@github.com:lizzie/gallery.git
+git clone git@github.com:{{your_username}}/gallery.git
 ```
 
 然后安装依赖模块。
