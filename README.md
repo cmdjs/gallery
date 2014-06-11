@@ -3,11 +3,11 @@
 
 ### 准备工作
 
-#### 安装 grunt-cli 和 spm
+#### 安装 grunt-cli 和 spm2
 
 ```
 npm install grunt-cli -g
-npm install spm -g -f
+npm install spm@2.x -g -f
 ```
 
 #### Fork cmdjs/gallery 仓库
