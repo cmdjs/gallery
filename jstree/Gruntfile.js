@@ -22,7 +22,7 @@ module.exports = function(grunt) {
       },
       css: {
         url: 'https://raw.githubusercontent.com/vakata/jstree/3.0.2/dist/themes/default/style.css',
-        name: 'defalut.css'
+        name: 'default.css'
       },
       png: {
         url: 'https://raw.githubusercontent.com/vakata/jstree/3.0.2/dist/themes/default/32px.png',
