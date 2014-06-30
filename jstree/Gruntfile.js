@@ -31,6 +31,10 @@ module.exports = function(grunt) {
       png2: {
         url: 'https://raw.githubusercontent.com/vakata/jstree/3.0.2/dist/themes/default/40px.png',
         name: '40px.png'
+      },
+      gif: {
+        url: 'https://raw.githubusercontent.com/vakata/jstree/3.0.2/dist/themes/default/throbber.gif',
+        name: 'throbber.gif'
       }
     }
   });
