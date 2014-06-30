@@ -44,7 +44,10 @@ module.exports = function(grunt) {
     var data = this.data;
 
     grunt.log.writeln('downloading ' + data.url);
-    request.get(data.url, function(err, res, body) {
+    request.get({
+      url: data.url,
+      encoding: /\.(jpg|gif|png)$/.test(data.url) ? null : undefined
+    }, function(err, res, body) {
       if (err) {
         grunt.log.error(err);
       } else if (res.statusCode !== 200) {
@@ -58,6 +61,7 @@ module.exports = function(grunt) {
           grunt.log.writeln('Add header and footer');
           code = [options.header || '', code, options.footer || ''].join('\n');
         }
+        console.log(code);
         grunt.file.write(path.join(options.dest, data.name), code);
         grunt.log.ok();
       }
