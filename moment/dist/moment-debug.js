@@ -1,6 +1,6 @@
-define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, module) {
+define("gallery/moment/2.8.1/moment-debug", [], function(require, exports, module) {
     //! moment.js
-    //! version : 2.5.1
+    //! version : 2.8.1
     //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
     //! license : MIT
     //! momentjs.com
@@ -8,25 +8,15 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         /************************************
         Constants
     ************************************/
-        var moment, VERSION = "2.5.1", global = this, round = Math.round, i, YEAR = 0, MONTH = 1, DATE = 2, HOUR = 3, MINUTE = 4, SECOND = 5, MILLISECOND = 6, // internal storage for language config files
-        languages = {}, // moment internal properties
-        momentProperties = {
-            _isAMomentObject: null,
-            _i: null,
-            _f: null,
-            _l: null,
-            _strict: null,
-            _isUTC: null,
-            _offset: null,
-            // optional. Combine with _isUTC
-            _pf: null,
-            _lang: null
-        }, // check for nodeJS
-        hasModule = typeof module !== "undefined" && module.exports && typeof require !== "undefined", // ASP.NET json date format regex
+        var moment, VERSION = "2.8.1", // the global-scope this is NOT the global object in Node.js
+        globalScope = typeof global !== "undefined" ? global : this, oldGlobalMoment, round = Math.round, i, YEAR = 0, MONTH = 1, DATE = 2, HOUR = 3, MINUTE = 4, SECOND = 5, MILLISECOND = 6, // internal storage for locale config files
+        locales = {}, // extra moment internal properties (plugins register props here)
+        momentProperties = [], // check for nodeJS
+        hasModule = typeof module !== "undefined" && module.exports, // ASP.NET json date format regex
         aspNetJsonRegex = /^\/?Date\((\-?\d+)/i, aspNetTimeSpanJsonRegex = /(\-)?(?:(\d*)\.)?(\d+)\:(\d+)(?:\:(\d+)\.?(\d{3})?)?/, // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
         // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
         isoDurationRegex = /^(-)?P(?:(?:([0-9,.]*)Y)?(?:([0-9,.]*)M)?(?:([0-9,.]*)D)?(?:T(?:([0-9,.]*)H)?(?:([0-9,.]*)M)?(?:([0-9,.]*)S)?)?|([0-9,.]*)W)$/, // format tokens
-        formattingTokens = /(\[[^\[]*\])|(\\)?(Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,4}|X|zz?|ZZ?|.)/g, localFormattingTokens = /(\[[^\[]*\])|(\\)?(LT|LL?L?L?|l{1,4})/g, // parsing token regexes
+        formattingTokens = /(\[[^\[]*\])|(\\)?(Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Q|YYYYYY|YYYYY|YYYY|YY|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|mm?|ss?|S{1,4}|X|zz?|ZZ?|.)/g, localFormattingTokens = /(\[[^\[]*\])|(\\)?(LT|LL?L?L?|l{1,4})/g, // parsing token regexes
         parseTokenOneOrTwoDigits = /\d\d?/, // 0 - 99
         parseTokenOneToThreeDigits = /\d{1,3}/, // 0 - 999
         parseTokenOneToFourDigits = /\d{1,4}/, // 0 - 9999
@@ -36,7 +26,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         parseTokenTimezone = /Z|[\+\-]\d\d:?\d\d/gi, // +00:00 -00:00 +0000 -0000 or Z
         parseTokenT = /T/i, // T (ISO separator)
         parseTokenTimestampMs = /[\+\-]?\d+(\.\d{1,3})?/, // 123456789 123456789.123
-        //strict parsing regexes
+        parseTokenOrdinal = /\d{1,2}/, //strict parsing regexes
         parseTokenOneDigit = /\d/, // 0 - 9
         parseTokenTwoDigits = /\d\d/, // 00 - 99
         parseTokenThreeDigits = /\d{3}/, // 000 - 999
@@ -46,7 +36,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         // iso 8601 regex
         // 0000-00-00 0000-W00 or 0000-W00-0 + T + 00 or 00:00 or 00:00:00 or 00:00:00.000 + +00:00 or +0000 or +00)
         isoRegex = /^\s*(?:[+-]\d{6}|\d{4})-(?:(\d\d-\d\d)|(W\d\d$)|(W\d\d-\d)|(\d\d\d))((T| )(\d\d(:\d\d(:\d\d(\.\d+)?)?)?)?([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/, isoFormat = "YYYY-MM-DDTHH:mm:ssZ", isoDates = [ [ "YYYYYY-MM-DD", /[+-]\d{6}-\d{2}-\d{2}/ ], [ "YYYY-MM-DD", /\d{4}-\d{2}-\d{2}/ ], [ "GGGG-[W]WW-E", /\d{4}-W\d{2}-\d/ ], [ "GGGG-[W]WW", /\d{4}-W\d{2}/ ], [ "YYYY-DDD", /\d{4}-\d{3}/ ] ], // iso time formats and regexes
-        isoTimes = [ [ "HH:mm:ss.SSSS", /(T| )\d\d:\d\d:\d\d\.\d{1,3}/ ], [ "HH:mm:ss", /(T| )\d\d:\d\d:\d\d/ ], [ "HH:mm", /(T| )\d\d:\d\d/ ], [ "HH", /(T| )\d\d/ ] ], // timezone chunker "+10:00" > ["10", "00"] or "-1530" > ["-15", "30"]
+        isoTimes = [ [ "HH:mm:ss.SSSS", /(T| )\d\d:\d\d:\d\d\.\d+/ ], [ "HH:mm:ss", /(T| )\d\d:\d\d:\d\d/ ], [ "HH:mm", /(T| )\d\d:\d\d/ ], [ "HH", /(T| )\d\d/ ] ], // timezone chunker "+10:00" > ["10", "00"] or "-1530" > ["-15", "30"]
         parseTimezoneChunker = /([\+\-]|\d\d)/gi, // getter and setter names
         proxyGettersAndSetters = "Date|Hours|Minutes|Seconds|Milliseconds".split("|"), unitMillisecondFactors = {
             Milliseconds: 1,
@@ -66,6 +56,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             w: "week",
             W: "isoWeek",
             M: "month",
+            Q: "quarter",
             y: "year",
             DDD: "dayOfYear",
             e: "weekday",
@@ -79,16 +70,27 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             weekyear: "weekYear",
             isoweekyear: "isoWeekYear"
         }, // format function strings
-        formatFunctions = {}, // tokens to ordinalize and pad
+        formatFunctions = {}, // default relative time thresholds
+        relativeTimeThresholds = {
+            s: 45,
+            // seconds to minute
+            m: 45,
+            // minutes to hour
+            h: 22,
+            // hours to day
+            d: 26,
+            // days to month
+            M: 11
+        }, // tokens to ordinalize and pad
         ordinalizeTokens = "DDD w W M D d".split(" "), paddedTokens = "M D H h m s w W".split(" "), formatTokenFunctions = {
             M: function() {
                 return this.month() + 1;
             },
             MMM: function(format) {
-                return this.lang().monthsShort(this, format);
+                return this.localeData().monthsShort(this, format);
             },
             MMMM: function(format) {
-                return this.lang().months(this, format);
+                return this.localeData().months(this, format);
             },
             D: function() {
                 return this.date();
@@ -100,13 +102,13 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 return this.day();
             },
             dd: function(format) {
-                return this.lang().weekdaysMin(this, format);
+                return this.localeData().weekdaysMin(this, format);
             },
             ddd: function(format) {
-                return this.lang().weekdaysShort(this, format);
+                return this.localeData().weekdaysShort(this, format);
             },
             dddd: function(format) {
-                return this.lang().weekdays(this, format);
+                return this.localeData().weekdays(this, format);
             },
             w: function() {
                 return this.week();
@@ -152,10 +154,10 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 return this.isoWeekday();
             },
             a: function() {
-                return this.lang().meridiem(this.hours(), this.minutes(), true);
+                return this.localeData().meridiem(this.hours(), this.minutes(), true);
             },
             A: function() {
-                return this.lang().meridiem(this.hours(), this.minutes(), false);
+                return this.localeData().meridiem(this.hours(), this.minutes(), false);
             },
             H: function() {
                 return this.hours();
@@ -209,7 +211,21 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             Q: function() {
                 return this.quarter();
             }
-        }, lists = [ "months", "monthsShort", "weekdays", "weekdaysShort", "weekdaysMin" ];
+        }, deprecations = {}, lists = [ "months", "monthsShort", "weekdays", "weekdaysShort", "weekdaysMin" ];
+        // Pick the first defined of two or three arguments. dfl comes from
+        // default.
+        function dfl(a, b, c) {
+            switch (arguments.length) {
+              case 2:
+                return a != null ? a : b;
+
+              case 3:
+                return a != null ? a : b != null ? b : c;
+
+              default:
+                throw new Error("Implement me");
+            }
+        }
         function defaultParsingFlags() {
             // We need to deep clone this object, and es5 standard is not very
             // helpful.
@@ -226,6 +242,27 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 iso: false
             };
         }
+        function printMsg(msg) {
+            if (moment.suppressDeprecationWarnings === false && typeof console !== "undefined" && console.warn) {
+                console.warn("Deprecation warning: " + msg);
+            }
+        }
+        function deprecate(msg, fn) {
+            var firstTime = true;
+            return extend(function() {
+                if (firstTime) {
+                    printMsg(msg);
+                    firstTime = false;
+                }
+                return fn.apply(this, arguments);
+            }, fn);
+        }
+        function deprecateSimple(name, msg) {
+            if (!deprecations[name]) {
+                printMsg(msg);
+                deprecations[name] = true;
+            }
+        }
         function padToken(func, count) {
             return function(a) {
                 return leftZeroFill(func.call(this, a), count);
@@ -233,7 +270,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         }
         function ordinalizeToken(func, period) {
             return function(a) {
-                return this.lang().ordinal(func.call(this, a), period);
+                return this.localeData().ordinal(func.call(this, a), period);
             };
         }
         while (ordinalizeTokens.length) {
@@ -248,15 +285,18 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         /************************************
         Constructors
     ************************************/
-        function Language() {}
+        function Locale() {}
         // Moment prototype object
-        function Moment(config) {
-            checkOverflow(config);
-            extend(this, config);
+        function Moment(config, skipOverflow) {
+            if (skipOverflow !== false) {
+                checkOverflow(config);
+            }
+            copyConfig(this, config);
+            this._d = new Date(+config._d);
         }
         // Duration Constructor
         function Duration(duration) {
-            var normalizedInput = normalizeObjectUnits(duration), years = normalizedInput.year || 0, months = normalizedInput.month || 0, weeks = normalizedInput.week || 0, days = normalizedInput.day || 0, hours = normalizedInput.hour || 0, minutes = normalizedInput.minute || 0, seconds = normalizedInput.second || 0, milliseconds = normalizedInput.millisecond || 0;
+            var normalizedInput = normalizeObjectUnits(duration), years = normalizedInput.year || 0, quarters = normalizedInput.quarter || 0, months = normalizedInput.month || 0, weeks = normalizedInput.week || 0, days = normalizedInput.day || 0, hours = normalizedInput.hour || 0, minutes = normalizedInput.minute || 0, seconds = normalizedInput.second || 0, milliseconds = normalizedInput.millisecond || 0;
             // representation for dateAddRemove
             this._milliseconds = +milliseconds + seconds * 1e3 + // 1000
             minutes * 6e4 + // 1000 * 60
@@ -268,8 +308,9 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             // It is impossible translate months into days without knowing
             // which months you are are talking about, so we have to store
             // it separately.
-            this._months = +months + years * 12;
+            this._months = +months + quarters * 3 + years * 12;
             this._data = {};
+            this._locale = moment.localeData();
             this._bubble();
         }
         /************************************
@@ -289,14 +330,48 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             }
             return a;
         }
-        function cloneMoment(m) {
-            var result = {}, i;
-            for (i in m) {
-                if (m.hasOwnProperty(i) && momentProperties.hasOwnProperty(i)) {
-                    result[i] = m[i];
+        function copyConfig(to, from) {
+            var i, prop, val;
+            if (typeof from._isAMomentObject !== "undefined") {
+                to._isAMomentObject = from._isAMomentObject;
+            }
+            if (typeof from._i !== "undefined") {
+                to._i = from._i;
+            }
+            if (typeof from._f !== "undefined") {
+                to._f = from._f;
+            }
+            if (typeof from._l !== "undefined") {
+                to._l = from._l;
+            }
+            if (typeof from._strict !== "undefined") {
+                to._strict = from._strict;
+            }
+            if (typeof from._tzm !== "undefined") {
+                to._tzm = from._tzm;
+            }
+            if (typeof from._isUTC !== "undefined") {
+                to._isUTC = from._isUTC;
+            }
+            if (typeof from._offset !== "undefined") {
+                to._offset = from._offset;
+            }
+            if (typeof from._pf !== "undefined") {
+                to._pf = from._pf;
+            }
+            if (typeof from._locale !== "undefined") {
+                to._locale = from._locale;
+            }
+            if (momentProperties.length > 0) {
+                for (i in momentProperties) {
+                    prop = momentProperties[i];
+                    val = from[prop];
+                    if (typeof val !== "undefined") {
+                        to[prop] = val;
+                    }
                 }
             }
-            return result;
+            return to;
         }
         function absRound(number) {
             if (number < 0) {
@@ -314,30 +389,61 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             }
             return (sign ? forceSign ? "+" : "" : "-") + output;
         }
-        // helper function for _.addTime and _.subtractTime
-        function addOrSubtractDurationFromMoment(mom, duration, isAdding, ignoreUpdateOffset) {
-            var milliseconds = duration._milliseconds, days = duration._days, months = duration._months, minutes, hours;
+        function positiveMomentsDifference(base, other) {
+            var res = {
+                milliseconds: 0,
+                months: 0
+            };
+            res.months = other.month() - base.month() + (other.year() - base.year()) * 12;
+            if (base.clone().add(res.months, "M").isAfter(other)) {
+                --res.months;
+            }
+            res.milliseconds = +other - +base.clone().add(res.months, "M");
+            return res;
+        }
+        function momentsDifference(base, other) {
+            var res;
+            other = makeAs(other, base);
+            if (base.isBefore(other)) {
+                res = positiveMomentsDifference(base, other);
+            } else {
+                res = positiveMomentsDifference(other, base);
+                res.milliseconds = -res.milliseconds;
+                res.months = -res.months;
+            }
+            return res;
+        }
+        // TODO: remove 'name' arg after deprecation is removed
+        function createAdder(direction, name) {
+            return function(val, period) {
+                var dur, tmp;
+                //invert the arguments, but complain about it
+                if (period !== null && !isNaN(+period)) {
+                    deprecateSimple(name, "moment()." + name + "(period, number) is deprecated. Please use moment()." + name + "(number, period).");
+                    tmp = val;
+                    val = period;
+                    period = tmp;
+                }
+                val = typeof val === "string" ? +val : val;
+                dur = moment.duration(val, period);
+                addOrSubtractDurationFromMoment(this, dur, direction);
+                return this;
+            };
+        }
+        function addOrSubtractDurationFromMoment(mom, duration, isAdding, updateOffset) {
+            var milliseconds = duration._milliseconds, days = duration._days, months = duration._months;
+            updateOffset = updateOffset == null ? true : updateOffset;
             if (milliseconds) {
                 mom._d.setTime(+mom._d + milliseconds * isAdding);
             }
-            // store the minutes and hours so we can restore them
-            if (days || months) {
-                minutes = mom.minute();
-                hours = mom.hour();
-            }
             if (days) {
-                mom.date(mom.date() + days * isAdding);
+                rawSetter(mom, "Date", rawGetter(mom, "Date") + days * isAdding);
             }
             if (months) {
-                mom.month(mom.month() + months * isAdding);
+                rawMonthSetter(mom, rawGetter(mom, "Month") + months * isAdding);
             }
-            if (milliseconds && !ignoreUpdateOffset) {
-                moment.updateOffset(mom);
-            }
-            // restore the minutes and hours after possibly changing dst
-            if (days || months) {
-                mom.minute(minutes);
-                mom.hour(hours);
+            if (updateOffset) {
+                moment.updateOffset(mom, days || months);
             }
         }
         // check if is an array
@@ -388,14 +494,14 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 return;
             }
             moment[field] = function(format, index) {
-                var i, getter, method = moment.fn._lang[field], results = [];
+                var i, getter, method = moment._locale[field], results = [];
                 if (typeof format === "number") {
                     index = format;
                     format = undefined;
                 }
                 getter = function(i) {
                     var m = moment().utc().set(setter, i);
-                    return method.call(moment.fn._lang, m, format || "");
+                    return method.call(moment._locale, m, format || "");
                 };
                 if (index != null) {
                     return getter(index);
@@ -420,6 +526,9 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         }
         function daysInMonth(year, month) {
             return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+        }
+        function weeksInYear(year, dow, doy) {
+            return weekOfYear(moment([ year, 11, 31 + dow - doy ]), dow, doy).week;
         }
         function daysInYear(year) {
             return isLeapYear(year) ? 366 : 365;
@@ -446,17 +555,54 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             }
             return m._isValid;
         }
-        function normalizeLanguage(key) {
+        function normalizeLocale(key) {
             return key ? key.toLowerCase().replace("_", "-") : key;
+        }
+        // pick the locale from the array
+        // try ['en-au', 'en-gb'] as 'en-au', 'en-gb', 'en', as in move through the list trying each
+        // substring from most specific to least, but move to the next array item if it's a more specific variant than the current root
+        function chooseLocale(names) {
+            var i = 0, j, next, locale, split;
+            while (i < names.length) {
+                split = normalizeLocale(names[i]).split("-");
+                j = split.length;
+                next = normalizeLocale(names[i + 1]);
+                next = next ? next.split("-") : null;
+                while (j > 0) {
+                    locale = loadLocale(split.slice(0, j).join("-"));
+                    if (locale) {
+                        return locale;
+                    }
+                    if (next && next.length >= j && compareArrays(split, next, true) >= j - 1) {
+                        //the next array item is better than a shallower substring of this one
+                        break;
+                    }
+                    j--;
+                }
+                i++;
+            }
+            return null;
+        }
+        function loadLocale(name) {
+            var oldLocale = null;
+            if (!locales[name] && hasModule) {
+                try {
+                    oldLocale = moment.locale();
+                    require("./locale/" + name);
+                    // because defineLocale currently also sets the global locale, we want to undo that for lazy loaded locales
+                    moment.locale(oldLocale);
+                } catch (e) {}
+            }
+            return locales[name];
         }
         // Return a moment from input, that is local/utc/zone equivalent to model.
         function makeAs(input, model) {
             return model._isUTC ? moment(input).zone(model._offset || 0) : moment(input).local();
         }
         /************************************
-        Languages
+        Locale
     ************************************/
-        extend(Language.prototype, {
+        extend(Locale.prototype, {
             set: function(config) {
                 var prop, i;
                 for (i in config) {
@@ -527,9 +673,9 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             _longDateFormat: {
                 LT: "h:mm A",
                 L: "MM/DD/YYYY",
-                LL: "MMMM D YYYY",
-                LLL: "MMMM D YYYY LT",
-                LLLL: "dddd, MMMM D YYYY LT"
+                LL: "MMMM D, YYYY",
+                LLL: "MMMM D, YYYY LT",
+                LLLL: "dddd, MMMM D, YYYY LT"
             },
             longDateFormat: function(key) {
                 var output = this._longDateFormat[key];
@@ -612,71 +758,6 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 return this._invalidDate;
             }
         });
-        // Loads a language definition into the `languages` cache.  The function
-        // takes a key and optionally values.  If not in the browser and no values
-        // are provided, it will load the language file module.  As a convenience,
-        // this function also returns the language values.
-        function loadLang(key, values) {
-            values.abbr = key;
-            if (!languages[key]) {
-                languages[key] = new Language();
-            }
-            languages[key].set(values);
-            return languages[key];
-        }
-        // Remove a language from the `languages` cache. Mostly useful in tests.
-        function unloadLang(key) {
-            delete languages[key];
-        }
-        // Determines which language definition to use and returns it.
-        //
-        // With no parameters, it will return the global language.  If you
-        // pass in a language key, such as 'en', it will return the
-        // definition for 'en', so long as 'en' has already been loaded using
-        // moment.lang.
-        function getLangDefinition(key) {
-            var i = 0, j, lang, next, split, get = function(k) {
-                if (!languages[k] && hasModule) {
-                    try {
-                        require("./lang/" + k);
-                    } catch (e) {}
-                }
-                return languages[k];
-            };
-            if (!key) {
-                return moment.fn._lang;
-            }
-            if (!isArray(key)) {
-                //short-circuit everything else
-                lang = get(key);
-                if (lang) {
-                    return lang;
-                }
-                key = [ key ];
-            }
-            //pick the language from the array
-            //try ['en-au', 'en-gb'] as 'en-au', 'en-gb', 'en', as in move through the list trying each
-            //substring from most specific to least, but move to the next array item if it's a more specific variant than the current root
-            while (i < key.length) {
-                split = normalizeLanguage(key[i]).split("-");
-                j = split.length;
-                next = normalizeLanguage(key[i + 1]);
-                next = next ? next.split("-") : null;
-                while (j > 0) {
-                    lang = get(split.slice(0, j).join("-"));
-                    if (lang) {
-                        return lang;
-                    }
-                    if (next && next.length >= j && compareArrays(split, next, true) >= j - 1) {
-                        //the next array item is better than a shallower substring of this one
-                        break;
-                    }
-                    j--;
-                }
-                i++;
-            }
-            return moment.fn._lang;
-        }
         /************************************
         Formatting
     ************************************/
@@ -706,18 +787,18 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         // format date using native date object
         function formatMoment(m, format) {
             if (!m.isValid()) {
-                return m.lang().invalidDate();
+                return m.localeData().invalidDate();
             }
-            format = expandFormat(format, m.lang());
+            format = expandFormat(format, m.localeData());
             if (!formatFunctions[format]) {
                 formatFunctions[format] = makeFormatFunction(format);
             }
             return formatFunctions[format](m);
         }
-        function expandFormat(format, lang) {
+        function expandFormat(format, locale) {
             var i = 5;
             function replaceLongDateFormatTokens(input) {
-                return lang.longDateFormat(input) || input;
+                return locale.longDateFormat(input) || input;
             }
             localFormattingTokens.lastIndex = 0;
             while (i >= 0 && localFormattingTokens.test(format)) {
@@ -734,6 +815,9 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         function getParseRegexForToken(token, config) {
             var a, strict = config._strict;
             switch (token) {
+              case "Q":
+                return parseTokenOneDigit;
+
               case "DDDD":
                 return parseTokenThreeDigits;
 
@@ -783,7 +867,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
 
               case "a":
               case "A":
-                return getLangDefinition(config._l)._meridiemParse;
+                return config._locale._meridiemParse;
 
               case "X":
                 return parseTokenTimestampMs;
@@ -824,6 +908,9 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
               case "E":
                 return parseTokenOneOrTwoDigits;
 
+              case "Do":
+                return parseTokenOrdinal;
+
               default:
                 a = new RegExp(regexpEscape(unescapeFormat(token.replace("\\", "")), "i"));
                 return a;
@@ -838,6 +925,13 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         function addTimeToArrayFromToken(token, input, config) {
             var a, datePartArray = config._a;
             switch (token) {
+              // QUARTER
+                case "Q":
+                if (input != null) {
+                    datePartArray[MONTH] = (toInt(input) - 1) * 3;
+                }
+                break;
+
               // MONTH
                 case "M":
               // fall through to MM
@@ -850,7 +944,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
               case "MMM":
               // fall through to MMMM
                 case "MMMM":
-                a = getLangDefinition(config._l).monthsParse(input);
+                a = config._locale.monthsParse(input);
                 // if we didn't find a month name, mark the date as invalid.
                 if (a != null) {
                     datePartArray[MONTH] = a;
@@ -868,6 +962,12 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 }
                 break;
 
+              case "Do":
+                if (input != null) {
+                    datePartArray[DATE] = toInt(parseInt(input, 10));
+                }
+                break;
+
               // DAY OF YEAR
                 case "DDD":
               // fall through to DDDD
@@ -879,7 +979,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
 
               // YEAR
                 case "YY":
-                datePartArray[YEAR] = toInt(input) + (toInt(input) > 68 ? 1900 : 2e3);
+                datePartArray[YEAR] = moment.parseTwoDigitYear(input);
                 break;
 
               case "YYYY":
@@ -892,7 +992,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 case "a":
               // fall through to A
                 case "A":
-                config._isPm = getLangDefinition(config._l).isPM(input);
+                config._isPm = config._locale.isPM(input);
                 break;
 
               // 24 HOUR
@@ -941,67 +1041,100 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 config._tzm = timezoneMinutesFromString(input);
                 break;
 
-              case "w":
+              // WEEKDAY - human
+                case "dd":
+              case "ddd":
+              case "dddd":
+                a = config._locale.weekdaysParse(input);
+                // if we didn't get a weekday name, mark the date as invalid
+                if (a != null) {
+                    config._w = config._w || {};
+                    config._w["d"] = a;
+                } else {
+                    config._pf.invalidWeekday = input;
+                }
+                break;
+
+              // WEEK, WEEK DAY - numeric
+                case "w":
               case "ww":
               case "W":
               case "WW":
               case "d":
-              case "dd":
-              case "ddd":
-              case "dddd":
               case "e":
               case "E":
                 token = token.substr(0, 1);
 
               /* falls through */
-                case "gg":
-              case "gggg":
-              case "GG":
+                case "gggg":
               case "GGGG":
               case "GGGGG":
                 token = token.substr(0, 2);
                 if (input) {
                     config._w = config._w || {};
-                    config._w[token] = input;
+                    config._w[token] = toInt(input);
                 }
                 break;
+
+              case "gg":
+              case "GG":
+                config._w = config._w || {};
+                config._w[token] = moment.parseTwoDigitYear(input);
             }
+        }
+        function dayOfYearFromWeekInfo(config) {
+            var w, weekYear, week, weekday, dow, doy, temp;
+            w = config._w;
+            if (w.GG != null || w.W != null || w.E != null) {
+                dow = 1;
+                doy = 4;
+                // TODO: We need to take the current isoWeekYear, but that depends on
+                // how we interpret now (local, utc, fixed offset). So create
+                // a now version of current config (take local/utc/offset flags, and
+                // create now).
+                weekYear = dfl(w.GG, config._a[YEAR], weekOfYear(moment(), 1, 4).year);
+                week = dfl(w.W, 1);
+                weekday = dfl(w.E, 1);
+            } else {
+                dow = config._locale._week.dow;
+                doy = config._locale._week.doy;
+                weekYear = dfl(w.gg, config._a[YEAR], weekOfYear(moment(), dow, doy).year);
+                week = dfl(w.w, 1);
+                if (w.d != null) {
+                    // weekday -- low day numbers are considered next week
+                    weekday = w.d;
+                    if (weekday < dow) {
+                        ++week;
+                    }
+                } else if (w.e != null) {
+                    // local weekday -- counting starts from begining of week
+                    weekday = w.e + dow;
+                } else {
+                    // default to begining of week
+                    weekday = dow;
+                }
+            }
+            temp = dayOfYearFromWeeks(weekYear, week, weekday, doy, dow);
+            config._a[YEAR] = temp.year;
+            config._dayOfYear = temp.dayOfYear;
         }
         // convert an array to a date.
         // the array should mirror the parameters below
         // note: all values past the year are optional and will default to the lowest possible value.
         // [year, month, day , hour, minute, second, millisecond]
         function dateFromConfig(config) {
-            var i, date, input = [], currentDate, yearToUse, fixYear, w, temp, lang, weekday, week;
+            var i, date, input = [], currentDate, yearToUse;
             if (config._d) {
                 return;
             }
             currentDate = currentDateArray(config);
             //compute day of the year from weeks and weekdays
             if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
-                fixYear = function(val) {
-                    var int_val = parseInt(val, 10);
-                    return val ? val.length < 3 ? int_val > 68 ? 1900 + int_val : 2e3 + int_val : int_val : config._a[YEAR] == null ? moment().weekYear() : config._a[YEAR];
-                };
-                w = config._w;
-                if (w.GG != null || w.W != null || w.E != null) {
-                    temp = dayOfYearFromWeeks(fixYear(w.GG), w.W || 1, w.E, 4, 1);
-                } else {
-                    lang = getLangDefinition(config._l);
-                    weekday = w.d != null ? parseWeekday(w.d, lang) : w.e != null ? parseInt(w.e, 10) + lang._week.dow : 0;
-                    week = parseInt(w.w, 10) || 1;
-                    //if we're parsing 'd', then the low day numbers may be next week
-                    if (w.d != null && weekday < lang._week.dow) {
-                        week++;
-                    }
-                    temp = dayOfYearFromWeeks(fixYear(w.gg), week, weekday, lang._week.doy, lang._week.dow);
-                }
-                config._a[YEAR] = temp.year;
-                config._dayOfYear = temp.dayOfYear;
+                dayOfYearFromWeekInfo(config);
             }
             //if the day of the year is set, figure out what it is
             if (config._dayOfYear) {
-                yearToUse = config._a[YEAR] == null ? currentDate[YEAR] : config._a[YEAR];
+                yearToUse = dfl(config._a[YEAR], currentDate[YEAR]);
                 if (config._dayOfYear > daysInYear(yearToUse)) {
                     config._pf._overflowDayOfYear = true;
                 }
@@ -1021,10 +1154,12 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             for (;i < 7; i++) {
                 config._a[i] = input[i] = config._a[i] == null ? i === 2 ? 1 : 0 : config._a[i];
             }
-            // add the offsets to the time to be parsed so that we can have a clean array for checking isValid
-            input[HOUR] += toInt((config._tzm || 0) / 60);
-            input[MINUTE] += toInt((config._tzm || 0) % 60);
             config._d = (config._useUTC ? makeUTCDate : makeDate).apply(null, input);
+            // Apply timezone offset from input. The actual zone can be changed
+            // with parseZone.
+            if (config._tzm != null) {
+                config._d.setUTCMinutes(config._d.getUTCMinutes() + config._tzm);
+            }
         }
         function dateFromObject(config) {
             var normalizedInput;
@@ -1045,11 +1180,15 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         }
         // date from string and format string
         function makeDateFromStringAndFormat(config) {
+            if (config._f === moment.ISO_8601) {
+                parseISO(config);
+                return;
+            }
             config._a = [];
             config._pf.empty = true;
             // This array is used to make a Date, either with `new Date` or `Date.UTC`
-            var lang = getLangDefinition(config._l), string = "" + config._i, i, parsedInput, tokens, token, skipped, stringLength = string.length, totalParsedInputLength = 0;
-            tokens = expandFormat(config._f, lang).match(formattingTokens) || [];
+            var string = "" + config._i, i, parsedInput, tokens, token, skipped, stringLength = string.length, totalParsedInputLength = 0;
+            tokens = expandFormat(config._f, config._locale).match(formattingTokens) || [];
             for (i = 0; i < tokens.length; i++) {
                 token = tokens[i];
                 parsedInput = (string.match(getParseRegexForToken(token, config)) || [])[0];
@@ -1108,7 +1247,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             }
             for (i = 0; i < config._f.length; i++) {
                 currentScore = 0;
-                tempConfig = extend({}, config);
+                tempConfig = copyConfig({}, config);
                 tempConfig._pf = defaultParsingFlags();
                 tempConfig._f = config._f[i];
                 makeDateFromStringAndFormat(tempConfig);
@@ -1128,7 +1267,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             extend(config, bestMoment || tempConfig);
         }
         // date from iso format
-        function makeDateFromString(config) {
+        function parseISO(config) {
             var i, l, string = config._i, match = isoRegex.exec(string);
             if (match) {
                 config._pf.iso = true;
@@ -1150,26 +1289,37 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 }
                 makeDateFromStringAndFormat(config);
             } else {
-                config._d = new Date(string);
+                config._isValid = false;
+            }
+        }
+        // date from iso format or fallback
+        function makeDateFromString(config) {
+            parseISO(config);
+            if (config._isValid === false) {
+                delete config._isValid;
+                moment.createFromInputFallback(config);
             }
         }
         function makeDateFromInput(config) {
-            var input = config._i, matched = aspNetJsonRegex.exec(input);
+            var input = config._i, matched;
             if (input === undefined) {
                 config._d = new Date();
-            } else if (matched) {
+            } else if (isDate(input)) {
+                config._d = new Date(+input);
+            } else if ((matched = aspNetJsonRegex.exec(input)) !== null) {
                 config._d = new Date(+matched[1]);
             } else if (typeof input === "string") {
                 makeDateFromString(config);
             } else if (isArray(input)) {
                 config._a = input.slice(0);
                 dateFromConfig(config);
-            } else if (isDate(input)) {
-                config._d = new Date(+input);
             } else if (typeof input === "object") {
                 dateFromObject(config);
-            } else {
+            } else if (typeof input === "number") {
+                // from milliseconds
                 config._d = new Date(input);
+            } else {
+                moment.createFromInputFallback(config);
             }
         }
         function makeDate(y, m, d, h, M, s, ms) {
@@ -1189,12 +1339,12 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             }
             return date;
         }
-        function parseWeekday(input, language) {
+        function parseWeekday(input, locale) {
             if (typeof input === "string") {
                 if (!isNaN(input)) {
                     input = parseInt(input, 10);
                 } else {
-                    input = language.weekdaysParse(input);
+                    input = locale.weekdaysParse(input);
                     if (typeof input !== "number") {
                         return null;
                     }
@@ -1206,14 +1356,14 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         Relative Time
     ************************************/
         // helper function for moment.fn.from, moment.fn.fromNow, and moment.duration.fn.humanize
-        function substituteTimeAgo(string, number, withoutSuffix, isFuture, lang) {
-            return lang.relativeTime(number || 1, !!withoutSuffix, string, isFuture);
+        function substituteTimeAgo(string, number, withoutSuffix, isFuture, locale) {
+            return locale.relativeTime(number || 1, !!withoutSuffix, string, isFuture);
         }
-        function relativeTime(milliseconds, withoutSuffix, lang) {
-            var seconds = round(Math.abs(milliseconds) / 1e3), minutes = round(seconds / 60), hours = round(minutes / 60), days = round(hours / 24), years = round(days / 365), args = seconds < 45 && [ "s", seconds ] || minutes === 1 && [ "m" ] || minutes < 45 && [ "mm", minutes ] || hours === 1 && [ "h" ] || hours < 22 && [ "hh", hours ] || days === 1 && [ "d" ] || days <= 25 && [ "dd", days ] || days <= 45 && [ "M" ] || days < 345 && [ "MM", round(days / 30) ] || years === 1 && [ "y" ] || [ "yy", years ];
+        function relativeTime(posNegDuration, withoutSuffix, locale) {
+            var duration = moment.duration(posNegDuration).abs(), seconds = round(duration.as("s")), minutes = round(duration.as("m")), hours = round(duration.as("h")), days = round(duration.as("d")), months = round(duration.as("M")), years = round(duration.as("y")), args = seconds < relativeTimeThresholds.s && [ "s", seconds ] || minutes === 1 && [ "m" ] || minutes < relativeTimeThresholds.m && [ "mm", minutes ] || hours === 1 && [ "h" ] || hours < relativeTimeThresholds.h && [ "hh", hours ] || days === 1 && [ "d" ] || days < relativeTimeThresholds.d && [ "dd", days ] || months === 1 && [ "M" ] || months < relativeTimeThresholds.M && [ "MM", months ] || years === 1 && [ "y" ] || [ "yy", years ];
             args[2] = withoutSuffix;
-            args[3] = milliseconds > 0;
-            args[4] = lang;
+            args[3] = +posNegDuration > 0;
+            args[4] = locale;
             return substituteTimeAgo.apply({}, args);
         }
         /************************************
@@ -1234,7 +1384,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             if (daysToDayOfWeek < end - 7) {
                 daysToDayOfWeek += 7;
             }
-            adjustedMoment = moment(mom).add("d", daysToDayOfWeek);
+            adjustedMoment = moment(mom).add(daysToDayOfWeek, "d");
             return {
                 week: Math.ceil(adjustedMoment.dayOfYear() / 7),
                 year: adjustedMoment.year()
@@ -1243,6 +1393,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         //http://en.wikipedia.org/wiki/ISO_week_date#Calculating_a_date_given_the_year.2C_week_number_and_weekday
         function dayOfYearFromWeeks(year, week, weekday, firstDayOfWeekOfYear, firstDayOfWeek) {
             var d = makeUTCDate(year, 0, 1).getUTCDay(), daysToAdd, dayOfYear;
+            d = d === 0 ? 7 : d;
             weekday = weekday != null ? weekday : firstDayOfWeek;
             daysToAdd = firstDayOfWeek - d + (d > firstDayOfWeekOfYear ? 7 : 0) - (d < firstDayOfWeek ? 7 : 0);
             dayOfYear = 7 * (week - 1) + (weekday - firstDayOfWeek) + daysToAdd + 1;
@@ -1256,17 +1407,17 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
     ************************************/
         function makeMoment(config) {
             var input = config._i, format = config._f;
-            if (input === null) {
+            config._locale = config._locale || moment.localeData(config._l);
+            if (input === null || format === undefined && input === "") {
                 return moment.invalid({
                     nullInput: true
                 });
             }
             if (typeof input === "string") {
-                config._i = input = getLangDefinition().preparse(input);
+                config._i = input = config._locale.preparse(input);
             }
             if (moment.isMoment(input)) {
-                config = cloneMoment(input);
-                config._d = new Date(+input._d);
+                return new Moment(input, true);
             } else if (format) {
                 if (isArray(format)) {
                     makeDateFromStringAndArray(config);
@@ -1278,11 +1429,11 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             }
             return new Moment(config);
         }
-        moment = function(input, format, lang, strict) {
+        moment = function(input, format, locale, strict) {
             var c;
-            if (typeof lang === "boolean") {
-                strict = lang;
-                lang = undefined;
+            if (typeof locale === "boolean") {
+                strict = locale;
+                locale = undefined;
             }
             // object construction must be done this way.
             // https://github.com/moment/moment/issues/1423
@@ -1290,18 +1441,51 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             c._isAMomentObject = true;
             c._i = input;
             c._f = format;
-            c._l = lang;
+            c._l = locale;
             c._strict = strict;
             c._isUTC = false;
             c._pf = defaultParsingFlags();
             return makeMoment(c);
         };
+        moment.suppressDeprecationWarnings = false;
+        moment.createFromInputFallback = deprecate("moment construction falls back to js Date. This is " + "discouraged and will be removed in upcoming major " + "release. Please refer to " + "https://github.com/moment/moment/issues/1407 for more info.", function(config) {
+            config._d = new Date(config._i);
+        });
+        // Pick a moment m from moments so that m[fn](other) is true for all
+        // other. This relies on the function fn to be transitive.
+        //
+        // moments should either be an array of moment objects or an array, whose
+        // first element is an array of moment objects.
+        function pickBy(fn, moments) {
+            var res, i;
+            if (moments.length === 1 && isArray(moments[0])) {
+                moments = moments[0];
+            }
+            if (!moments.length) {
+                return moment();
+            }
+            res = moments[0];
+            for (i = 1; i < moments.length; ++i) {
+                if (moments[i][fn](res)) {
+                    res = moments[i];
+                }
+            }
+            return res;
+        }
+        moment.min = function() {
+            var args = [].slice.call(arguments, 0);
+            return pickBy("isBefore", args);
+        };
+        moment.max = function() {
+            var args = [].slice.call(arguments, 0);
+            return pickBy("isAfter", args);
+        };
         // creating with utc
-        moment.utc = function(input, format, lang, strict) {
+        moment.utc = function(input, format, locale, strict) {
             var c;
-            if (typeof lang === "boolean") {
-                strict = lang;
-                lang = undefined;
+            if (typeof locale === "boolean") {
+                strict = locale;
+                locale = undefined;
             }
             // object construction must be done this way.
             // https://github.com/moment/moment/issues/1423
@@ -1309,7 +1493,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             c._isAMomentObject = true;
             c._useUTC = true;
             c._isUTC = true;
-            c._l = lang;
+            c._l = locale;
             c._i = input;
             c._f = format;
             c._strict = strict;
@@ -1323,7 +1507,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         // duration
         moment.duration = function(input, key) {
             var duration = input, // matching against regexp is expensive, do it on demand
-            match = null, sign, ret, parseIso;
+            match = null, sign, ret, parseIso, diffRes;
             if (moment.isDuration(input)) {
                 duration = {
                     ms: input._milliseconds,
@@ -1366,10 +1550,15 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                     s: parseIso(match[7]),
                     w: parseIso(match[8])
                 };
+            } else if (typeof duration === "object" && ("from" in duration || "to" in duration)) {
+                diffRes = momentsDifference(moment(duration.from), moment(duration.to));
+                duration = {};
+                duration.ms = diffRes.milliseconds;
+                duration.M = diffRes.months;
             }
             ret = new Duration(duration);
-            if (moment.isDuration(input) && input.hasOwnProperty("_lang")) {
-                ret._lang = input._lang;
+            if (moment.isDuration(input) && input.hasOwnProperty("_locale")) {
+                ret._locale = input._locale;
             }
             return ret;
         };
@@ -1377,34 +1566,82 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
         moment.version = VERSION;
         // default format
         moment.defaultFormat = isoFormat;
+        // constant that refers to the ISO standard
+        moment.ISO_8601 = function() {};
+        // Plugins that add properties should also add the key here (null value),
+        // so we can properly clone ourselves.
+        moment.momentProperties = momentProperties;
         // This function will be called whenever a moment is mutated.
         // It is intended to keep the offset in sync with the timezone.
         moment.updateOffset = function() {};
-        // This function will load languages and then set the global language.  If
-        // no arguments are passed in, it will simply return the current global
-        // language key.
-        moment.lang = function(key, values) {
-            var r;
-            if (!key) {
-                return moment.fn._lang._abbr;
+        // This function allows you to set a threshold for relative time strings
+        moment.relativeTimeThreshold = function(threshold, limit) {
+            if (relativeTimeThresholds[threshold] === undefined) {
+                return false;
             }
-            if (values) {
-                loadLang(normalizeLanguage(key), values);
-            } else if (values === null) {
-                unloadLang(key);
-                key = "en";
-            } else if (!languages[key]) {
-                getLangDefinition(key);
+            if (limit === undefined) {
+                return relativeTimeThresholds[threshold];
             }
-            r = moment.duration.fn._lang = moment.fn._lang = getLangDefinition(key);
-            return r._abbr;
+            relativeTimeThresholds[threshold] = limit;
+            return true;
         };
-        // returns language data
-        moment.langData = function(key) {
-            if (key && key._lang && key._lang._abbr) {
-                key = key._lang._abbr;
+        moment.lang = deprecate("moment.lang is deprecated. Use moment.locale instead.", function(key, value) {
+            return moment.locale(key, value);
+        });
+        // This function will load locale and then set the global locale.  If
+        // no arguments are passed in, it will simply return the current global
+        // locale key.
+        moment.locale = function(key, values) {
+            var data;
+            if (key) {
+                if (typeof values !== "undefined") {
+                    data = moment.defineLocale(key, values);
+                } else {
+                    data = moment.localeData(key);
+                }
+                if (data) {
+                    moment.duration._locale = moment._locale = data;
+                }
             }
-            return getLangDefinition(key);
+            return moment._locale._abbr;
+        };
+        moment.defineLocale = function(name, values) {
+            if (values !== null) {
+                values.abbr = name;
+                if (!locales[name]) {
+                    locales[name] = new Locale();
+                }
+                locales[name].set(values);
+                // backwards compat for now: also set the locale
+                moment.locale(name);
+                return locales[name];
+            } else {
+                // useful for testing
+                delete locales[name];
+                return null;
+            }
+        };
+        moment.langData = deprecate("moment.langData is deprecated. Use moment.localeData instead.", function(key) {
+            return moment.localeData(key);
+        });
+        // returns locale data
+        moment.localeData = function(key) {
+            var locale;
+            if (key && key._locale && key._locale._abbr) {
+                key = key._locale._abbr;
+            }
+            if (!key) {
+                return moment._locale;
+            }
+            if (!isArray(key)) {
+                //short-circuit everything else
+                locale = loadLocale(key);
+                if (locale) {
+                    return locale;
+                }
+                key = [ key ];
+            }
+            return chooseLocale(key);
         };
         // compare moment object
         moment.isMoment = function(obj) {
@@ -1429,8 +1666,11 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             }
             return m;
         };
-        moment.parseZone = function(input) {
-            return moment(input).parseZone();
+        moment.parseZone = function() {
+            return moment.apply(null, arguments).parseZone();
+        };
+        moment.parseTwoDigitYear = function(input) {
+            return toInt(input) + (toInt(input) > 68 ? 1900 : 2e3);
         };
         /************************************
         Moment Prototype
@@ -1446,7 +1686,7 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 return Math.floor(+this / 1e3);
             },
             toString: function() {
-                return this.clone().lang("en").format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ");
+                return this.clone().locale("en").format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ");
             },
             toDate: function() {
                 return this._offset ? new Date(+this) : this._d;
@@ -1478,40 +1718,25 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             invalidAt: function() {
                 return this._pf.overflow;
             },
-            utc: function() {
-                return this.zone(0);
+            utc: function(keepLocalTime) {
+                return this.zone(0, keepLocalTime);
             },
-            local: function() {
-                this.zone(0);
-                this._isUTC = false;
+            local: function(keepLocalTime) {
+                if (this._isUTC) {
+                    this.zone(0, keepLocalTime);
+                    this._isUTC = false;
+                    if (keepLocalTime) {
+                        this.add(this._d.getTimezoneOffset(), "m");
+                    }
+                }
                 return this;
             },
             format: function(inputString) {
                 var output = formatMoment(this, inputString || moment.defaultFormat);
-                return this.lang().postformat(output);
+                return this.localeData().postformat(output);
             },
-            add: function(input, val) {
-                var dur;
-                // switch args to support add('s', 1) and add(1, 's')
-                if (typeof input === "string") {
-                    dur = moment.duration(+val, input);
-                } else {
-                    dur = moment.duration(input, val);
-                }
-                addOrSubtractDurationFromMoment(this, dur, 1);
-                return this;
-            },
-            subtract: function(input, val) {
-                var dur;
-                // switch args to support subtract('s', 1) and subtract(1, 's')
-                if (typeof input === "string") {
-                    dur = moment.duration(+val, input);
-                } else {
-                    dur = moment.duration(input, val);
-                }
-                addOrSubtractDurationFromMoment(this, dur, -1);
-                return this;
-            },
+            add: createAdder(1, "add"),
+            subtract: createAdder(-1, "subtract"),
             diff: function(input, units, asFloat) {
                 var that = makeAs(input, this), zoneDiff = (this.zone() - that.zone()) * 6e4, diff, output;
                 units = normalizeUnits(units);
@@ -1541,16 +1766,19 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 return asFloat ? output : absRound(output);
             },
             from: function(time, withoutSuffix) {
-                return moment.duration(this.diff(time)).lang(this.lang()._abbr).humanize(!withoutSuffix);
+                return moment.duration({
+                    to: this,
+                    from: time
+                }).locale(this.locale()).humanize(!withoutSuffix);
             },
             fromNow: function(withoutSuffix) {
                 return this.from(moment(), withoutSuffix);
             },
-            calendar: function() {
+            calendar: function(time) {
                 // We want to compare the start of today, vs this.
                 // Getting start-of-today depends on whether we're zone'd or not.
-                var sod = makeAs(moment(), this).startOf("day"), diff = this.diff(sod, "days", true), format = diff < -6 ? "sameElse" : diff < -1 ? "lastWeek" : diff < 0 ? "lastDay" : diff < 1 ? "sameDay" : diff < 2 ? "nextDay" : diff < 7 ? "nextWeek" : "sameElse";
-                return this.format(this.lang().calendar(format, this));
+                var now = time || moment(), sod = makeAs(now, this).startOf("day"), diff = this.diff(sod, "days", true), format = diff < -6 ? "sameElse" : diff < -1 ? "lastWeek" : diff < 0 ? "lastDay" : diff < 1 ? "sameDay" : diff < 2 ? "nextDay" : diff < 7 ? "nextWeek" : "sameElse";
+                return this.format(this.localeData().calendar(format, this));
             },
             isLeapYear: function() {
                 return isLeapYear(this.year());
@@ -1561,33 +1789,13 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             day: function(input) {
                 var day = this._isUTC ? this._d.getUTCDay() : this._d.getDay();
                 if (input != null) {
-                    input = parseWeekday(input, this.lang());
-                    return this.add({
-                        d: input - day
-                    });
+                    input = parseWeekday(input, this.localeData());
+                    return this.add(input - day, "d");
                 } else {
                     return day;
                 }
             },
-            month: function(input) {
-                var utc = this._isUTC ? "UTC" : "", dayOfMonth;
-                if (input != null) {
-                    if (typeof input === "string") {
-                        input = this.lang().monthsParse(input);
-                        if (typeof input !== "number") {
-                            return this;
-                        }
-                    }
-                    dayOfMonth = this.date();
-                    this.date(1);
-                    this._d["set" + utc + "Month"](input);
-                    this.date(Math.min(dayOfMonth, this.daysInMonth()));
-                    moment.updateOffset(this);
-                    return this;
-                } else {
-                    return this._d["get" + utc + "Month"]();
-                }
-            },
+            month: makeAccessor("Month", true),
             startOf: function(units) {
                 units = normalizeUnits(units);
                 // the following switch intentionally omits break keywords
@@ -1597,7 +1805,8 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                     this.month(0);
 
                   /* falls through */
-                    case "month":
+                    case "quarter":
+                  case "month":
                     this.date(1);
 
                   /* falls through */
@@ -1624,11 +1833,15 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 } else if (units === "isoWeek") {
                     this.isoWeekday(1);
                 }
+                // quarters are also special
+                if (units === "quarter") {
+                    this.month(Math.floor(this.month() / 3) * 3);
+                }
                 return this;
             },
             endOf: function(units) {
                 units = normalizeUnits(units);
-                return this.startOf(units).add(units === "isoWeek" ? "week" : units, 1).subtract("ms", 1);
+                return this.startOf(units).add(1, units === "isoWeek" ? "week" : units).subtract(1, "ms");
             },
             isAfter: function(input, units) {
                 units = typeof units !== "undefined" ? units : "millisecond";
@@ -1642,16 +1855,26 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 units = units || "ms";
                 return +this.clone().startOf(units) === +makeAs(input, this).startOf(units);
             },
-            min: function(other) {
+            min: deprecate("moment().min is deprecated, use moment.min instead. https://github.com/moment/moment/issues/1548", function(other) {
                 other = moment.apply(null, arguments);
                 return other < this ? this : other;
-            },
-            max: function(other) {
+            }),
+            max: deprecate("moment().max is deprecated, use moment.max instead. https://github.com/moment/moment/issues/1548", function(other) {
                 other = moment.apply(null, arguments);
                 return other > this ? this : other;
-            },
-            zone: function(input) {
-                var offset = this._offset || 0;
+            }),
+            // keepLocalTime = true means only change the timezone, without
+            // affecting the local hour. So 5:31:26 +0300 --[zone(2, true)]-->
+            // 5:31:26 +0200 It is possible that 5:31:26 doesn't exist int zone
+            // +0200, so we adjust the time as needed, to be valid.
+            //
+            // Keeping the time actually adds/subtracts (one hour)
+            // from the actual represented time. That is why we call updateOffset
+            // a second time. In case it wants us to change the offset again
+            // _changeInProgress == true case, then we have to adjust, because
+            // there is no such time in the given timezone.
+            zone: function(input, keepLocalTime) {
+                var offset = this._offset || 0, localAdjust;
                 if (input != null) {
                     if (typeof input === "string") {
                         input = timezoneMinutesFromString(input);
@@ -1659,10 +1882,22 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                     if (Math.abs(input) < 16) {
                         input = input * 60;
                     }
+                    if (!this._isUTC && keepLocalTime) {
+                        localAdjust = this._d.getTimezoneOffset();
+                    }
                     this._offset = input;
                     this._isUTC = true;
+                    if (localAdjust != null) {
+                        this.subtract(localAdjust, "m");
+                    }
                     if (offset !== input) {
-                        addOrSubtractDurationFromMoment(this, moment.duration(offset - input, "m"), 1, true);
+                        if (!keepLocalTime || this._changeInProgress) {
+                            addOrSubtractDurationFromMoment(this, moment.duration(offset - input, "m"), 1, false);
+                        } else if (!this._changeInProgress) {
+                            this._changeInProgress = true;
+                            moment.updateOffset(this, true);
+                            this._changeInProgress = null;
+                        }
                     }
                 } else {
                     return this._isUTC ? offset : this._d.getTimezoneOffset();
@@ -1696,36 +1931,43 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
             },
             dayOfYear: function(input) {
                 var dayOfYear = round((moment(this).startOf("day") - moment(this).startOf("year")) / 864e5) + 1;
-                return input == null ? dayOfYear : this.add("d", input - dayOfYear);
+                return input == null ? dayOfYear : this.add(input - dayOfYear, "d");
             },
-            quarter: function() {
-                return Math.ceil((this.month() + 1) / 3);
+            quarter: function(input) {
+                return input == null ? Math.ceil((this.month() + 1) / 3) : this.month((input - 1) * 3 + this.month() % 3);
             },
             weekYear: function(input) {
-                var year = weekOfYear(this, this.lang()._week.dow, this.lang()._week.doy).year;
-                return input == null ? year : this.add("y", input - year);
+                var year = weekOfYear(this, this.localeData()._week.dow, this.localeData()._week.doy).year;
+                return input == null ? year : this.add(input - year, "y");
             },
             isoWeekYear: function(input) {
                 var year = weekOfYear(this, 1, 4).year;
-                return input == null ? year : this.add("y", input - year);
+                return input == null ? year : this.add(input - year, "y");
             },
             week: function(input) {
-                var week = this.lang().week(this);
-                return input == null ? week : this.add("d", (input - week) * 7);
+                var week = this.localeData().week(this);
+                return input == null ? week : this.add((input - week) * 7, "d");
             },
             isoWeek: function(input) {
                 var week = weekOfYear(this, 1, 4).week;
-                return input == null ? week : this.add("d", (input - week) * 7);
+                return input == null ? week : this.add((input - week) * 7, "d");
             },
             weekday: function(input) {
-                var weekday = (this.day() + 7 - this.lang()._week.dow) % 7;
-                return input == null ? weekday : this.add("d", input - weekday);
+                var weekday = (this.day() + 7 - this.localeData()._week.dow) % 7;
+                return input == null ? weekday : this.add(input - weekday, "d");
             },
             isoWeekday: function(input) {
                 // behaves the same as moment#day except
                 // as a getter, returns 7 instead of 0 (1-7 range instead of 0-6)
                 // as a setter, sunday should belong to the previous week.
                 return input == null ? this.day() || 7 : this.day(this.day() % 7 ? input : input - 7);
+            },
+            isoWeeksInYear: function() {
+                return weeksInYear(this.year(), 1, 4);
+            },
+            weeksInYear: function() {
+                var weekInfo = this.localeData()._week;
+                return weeksInYear(this.year(), weekInfo.dow, weekInfo.doy);
             },
             get: function(units) {
                 units = normalizeUnits(units);
@@ -1738,50 +1980,100 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 }
                 return this;
             },
-            // If passed a language key, it will set the language for this
-            // instance.  Otherwise, it will return the language configuration
+            // If passed a locale key, it will set the locale for this
+            // instance.  Otherwise, it will return the locale configuration
             // variables for this instance.
-            lang: function(key) {
+            locale: function(key) {
                 if (key === undefined) {
-                    return this._lang;
+                    return this._locale._abbr;
                 } else {
-                    this._lang = getLangDefinition(key);
+                    this._locale = moment.localeData(key);
                     return this;
                 }
+            },
+            lang: deprecate("moment().lang() is deprecated. Use moment().localeData() instead.", function(key) {
+                if (key === undefined) {
+                    return this.localeData();
+                } else {
+                    this._locale = moment.localeData(key);
+                    return this;
+                }
+            }),
+            localeData: function() {
+                return this._locale;
             }
         });
-        // helper for adding shortcuts
-        function makeGetterAndSetter(name, key) {
-            moment.fn[name] = moment.fn[name + "s"] = function(input) {
-                var utc = this._isUTC ? "UTC" : "";
-                if (input != null) {
-                    this._d["set" + utc + key](input);
-                    moment.updateOffset(this);
+        function rawMonthSetter(mom, value) {
+            var dayOfMonth;
+            // TODO: Move this out of here!
+            if (typeof value === "string") {
+                value = mom.localeData().monthsParse(value);
+                // TODO: Another silent failure?
+                if (typeof value !== "number") {
+                    return mom;
+                }
+            }
+            dayOfMonth = Math.min(mom.date(), daysInMonth(mom.year(), value));
+            mom._d["set" + (mom._isUTC ? "UTC" : "") + "Month"](value, dayOfMonth);
+            return mom;
+        }
+        function rawGetter(mom, unit) {
+            return mom._d["get" + (mom._isUTC ? "UTC" : "") + unit]();
+        }
+        function rawSetter(mom, unit, value) {
+            if (unit === "Month") {
+                return rawMonthSetter(mom, value);
+            } else {
+                return mom._d["set" + (mom._isUTC ? "UTC" : "") + unit](value);
+            }
+        }
+        function makeAccessor(unit, keepTime) {
+            return function(value) {
+                if (value != null) {
+                    rawSetter(this, unit, value);
+                    moment.updateOffset(this, keepTime);
                     return this;
                 } else {
-                    return this._d["get" + utc + key]();
+                    return rawGetter(this, unit);
                 }
             };
         }
-        // loop through and add shortcuts (Month, Date, Hours, Minutes, Seconds, Milliseconds)
-        for (i = 0; i < proxyGettersAndSetters.length; i++) {
-            makeGetterAndSetter(proxyGettersAndSetters[i].toLowerCase().replace(/s$/, ""), proxyGettersAndSetters[i]);
-        }
-        // add shortcut for year (uses different syntax than the getter/setter 'year' == 'FullYear')
-        makeGetterAndSetter("year", "FullYear");
+        moment.fn.millisecond = moment.fn.milliseconds = makeAccessor("Milliseconds", false);
+        moment.fn.second = moment.fn.seconds = makeAccessor("Seconds", false);
+        moment.fn.minute = moment.fn.minutes = makeAccessor("Minutes", false);
+        // Setting the hour should keep the time, because the user explicitly
+        // specified which hour he wants. So trying to maintain the same hour (in
+        // a new timezone) makes sense. Adding/subtracting hours does not follow
+        // this rule.
+        moment.fn.hour = moment.fn.hours = makeAccessor("Hours", true);
+        // moment.fn.month is defined separately
+        moment.fn.date = makeAccessor("Date", true);
+        moment.fn.dates = deprecate("dates accessor is deprecated. Use date instead.", makeAccessor("Date", true));
+        moment.fn.year = makeAccessor("FullYear", true);
+        moment.fn.years = deprecate("years accessor is deprecated. Use year instead.", makeAccessor("FullYear", true));
         // add plural methods
         moment.fn.days = moment.fn.day;
         moment.fn.months = moment.fn.month;
         moment.fn.weeks = moment.fn.week;
         moment.fn.isoWeeks = moment.fn.isoWeek;
+        moment.fn.quarters = moment.fn.quarter;
         // add aliased format methods
         moment.fn.toJSON = moment.fn.toISOString;
         /************************************
         Duration Prototype
     ************************************/
+        function daysToYears(days) {
+            // 400 years have 146097 days (taking into account leap year rules)
+            return days * 400 / 146097;
+        }
+        function yearsToDays(years) {
+            // years * 365 + absRound(years / 4) -
+            //     absRound(years / 100) + absRound(years / 400);
+            return years * 146097 / 400;
+        }
         extend(moment.duration.fn = Duration.prototype, {
             _bubble: function() {
-                var milliseconds = this._milliseconds, days = this._days, months = this._months, data = this._data, seconds, minutes, hours, years;
+                var milliseconds = this._milliseconds, days = this._days, months = this._months, data = this._data, seconds, minutes, hours, years = 0;
                 // The following code bubbles up values, see the tests for
                 // examples of what that means.
                 data.milliseconds = milliseconds % 1e3;
@@ -1792,11 +2084,31 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 hours = absRound(minutes / 60);
                 data.hours = hours % 24;
                 days += absRound(hours / 24);
-                data.days = days % 30;
+                // Accurately convert days to years, assume start from year 0.
+                years = absRound(daysToYears(days));
+                days -= absRound(yearsToDays(years));
+                // 30 days to a month
+                // TODO (iskren): Use anchor date (like 1st Jan) to compute this.
                 months += absRound(days / 30);
-                data.months = months % 12;
-                years = absRound(months / 12);
+                days %= 30;
+                // 12 months -> 1 year
+                years += absRound(months / 12);
+                months %= 12;
+                data.days = days;
+                data.months = months;
                 data.years = years;
+            },
+            abs: function() {
+                this._milliseconds = Math.abs(this._milliseconds);
+                this._days = Math.abs(this._days);
+                this._months = Math.abs(this._months);
+                this._data.milliseconds = Math.abs(this._data.milliseconds);
+                this._data.seconds = Math.abs(this._data.seconds);
+                this._data.minutes = Math.abs(this._data.minutes);
+                this._data.hours = Math.abs(this._data.hours);
+                this._data.months = Math.abs(this._data.months);
+                this._data.years = Math.abs(this._data.years);
+                return this;
             },
             weeks: function() {
                 return absRound(this.days() / 7);
@@ -1805,11 +2117,11 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 return this._milliseconds + this._days * 864e5 + this._months % 12 * 2592e6 + toInt(this._months / 12) * 31536e6;
             },
             humanize: function(withSuffix) {
-                var difference = +this, output = relativeTime(difference, !withSuffix, this.lang());
+                var output = relativeTime(this, !withSuffix, this.localeData());
                 if (withSuffix) {
-                    output = this.lang().pastFuture(difference, output);
+                    output = this.localeData().pastFuture(+this, output);
                 }
-                return this.lang().postformat(output);
+                return this.localeData().postformat(output);
             },
             add: function(input, val) {
                 // supports only 2.0-style add(1, 's') or add(moment)
@@ -1833,11 +2145,44 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 return this[units.toLowerCase() + "s"]();
             },
             as: function(units) {
+                var days, months;
                 units = normalizeUnits(units);
-                return this["as" + units.charAt(0).toUpperCase() + units.slice(1) + "s"]();
+                days = this._days + this._milliseconds / 864e5;
+                if (units === "month" || units === "year") {
+                    months = this._months + daysToYears(days) * 12;
+                    return units === "month" ? months : months / 12;
+                } else {
+                    days += yearsToDays(this._months / 12);
+                    switch (units) {
+                      case "week":
+                        return days / 7;
+
+                      case "day":
+                        return days;
+
+                      case "hour":
+                        return days * 24;
+
+                      case "minute":
+                        return days * 24 * 60;
+
+                      case "second":
+                        return days * 24 * 60 * 60;
+
+                      case "millisecond":
+                        return days * 24 * 60 * 60 * 1e3;
+
+                      default:
+                        throw new Error("Unknown unit " + units);
+                    }
+                }
             },
             lang: moment.fn.lang,
-            toIsoString: function() {
+            locale: moment.fn.locale,
+            toIsoString: deprecate("toIsoString() is deprecated. Please use toISOString() instead " + "(notice the capitals)", function() {
+                return this.toISOString();
+            }),
+            toISOString: function() {
                 // inspired by https://github.com/dordille/moment-isoduration/blob/master/moment.isoduration.js
                 var years = Math.abs(this.years()), months = Math.abs(this.months()), days = Math.abs(this.days()), hours = Math.abs(this.hours()), minutes = Math.abs(this.minutes()), seconds = Math.abs(this.seconds() + this.milliseconds() / 1e3);
                 if (!this.asSeconds()) {
@@ -1846,6 +2191,9 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                     return "P0D";
                 }
                 return (this.asSeconds() < 0 ? "-" : "") + "P" + (years ? years + "Y" : "") + (months ? months + "M" : "") + (days ? days + "D" : "") + (hours || minutes || seconds ? "T" : "") + (hours ? hours + "H" : "") + (minutes ? minutes + "M" : "") + (seconds ? seconds + "S" : "");
+            },
+            localeData: function() {
+                return this._locale;
             }
         });
         function makeDurationGetter(name) {
@@ -1853,69 +2201,73 @@ define("gallery/moment/2.5.1/moment-debug", [], function(require, exports, modul
                 return this._data[name];
             };
         }
-        function makeDurationAsGetter(name, factor) {
-            moment.duration.fn["as" + name] = function() {
-                return +this / factor;
-            };
-        }
         for (i in unitMillisecondFactors) {
             if (unitMillisecondFactors.hasOwnProperty(i)) {
-                makeDurationAsGetter(i, unitMillisecondFactors[i]);
                 makeDurationGetter(i.toLowerCase());
             }
         }
-        makeDurationAsGetter("Weeks", 6048e5);
+        moment.duration.fn.asMilliseconds = function() {
+            return this.as("ms");
+        };
+        moment.duration.fn.asSeconds = function() {
+            return this.as("s");
+        };
+        moment.duration.fn.asMinutes = function() {
+            return this.as("m");
+        };
+        moment.duration.fn.asHours = function() {
+            return this.as("h");
+        };
+        moment.duration.fn.asDays = function() {
+            return this.as("d");
+        };
+        moment.duration.fn.asWeeks = function() {
+            return this.as("weeks");
+        };
         moment.duration.fn.asMonths = function() {
-            return (+this - this.years() * 31536e6) / 2592e6 + this.years() * 12;
+            return this.as("M");
+        };
+        moment.duration.fn.asYears = function() {
+            return this.as("y");
         };
         /************************************
-        Default Lang
+        Default Locale
     ************************************/
-        // Set default language, other languages will inherit from English.
-        moment.lang("en", {
+        // Set default locale, other locale will inherit from English.
+        moment.locale("en", {
             ordinal: function(number) {
                 var b = number % 10, output = toInt(number % 100 / 10) === 1 ? "th" : b === 1 ? "st" : b === 2 ? "nd" : b === 3 ? "rd" : "th";
                 return number + output;
             }
         });
-        /* EMBED_LANGUAGES */
+        /* EMBED_LOCALES */
         /************************************
         Exposing Moment
     ************************************/
-        function makeGlobal(deprecate) {
-            var warned = false, local_moment = moment;
+        function makeGlobal(shouldDeprecate) {
             /*global ender:false */
             if (typeof ender !== "undefined") {
                 return;
             }
-            // here, `this` means `window` in the browser, or `global` on the server
-            // add `moment` as a global object via a string identifier,
-            // for Closure Compiler "advanced" mode
-            if (deprecate) {
-                global.moment = function() {
-                    if (!warned && console && console.warn) {
-                        warned = true;
-                        console.warn("Accessing Moment through the global scope is " + "deprecated, and will be removed in an upcoming " + "release.");
-                    }
-                    return local_moment.apply(null, arguments);
-                };
-                extend(global.moment, local_moment);
+            oldGlobalMoment = globalScope.moment;
+            if (shouldDeprecate) {
+                globalScope.moment = deprecate("Accessing Moment through the global scope is " + "deprecated, and will be removed in an upcoming " + "release.", moment);
             } else {
-                global["moment"] = moment;
+                globalScope.moment = moment;
             }
         }
         // CommonJS module is defined
         if (hasModule) {
             module.exports = moment;
-            makeGlobal(true);
         } else if (typeof define === "function" && define.amd) {
             define("moment", function(require, exports, module) {
-                if (module.config && module.config() && module.config().noGlobal !== true) {
-                    // If user provided noGlobal, he is aware of global
-                    makeGlobal(module.config().noGlobal === undefined);
+                if (module.config && module.config() && module.config().noGlobal === true) {
+                    // release the global variable
+                    globalScope.moment = oldGlobalMoment;
                 }
                 return moment;
             });
+            makeGlobal(true);
         } else {
             makeGlobal();
         }
