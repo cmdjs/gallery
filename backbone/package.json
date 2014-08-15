@@ -6,7 +6,7 @@
   "homepage": "http://backbonejs.org",
   "keywords": ["model", "view", "controller", "router", "server", "client", "browser"],
   "author": "Jeremy Ashkenas <jeremy@documentcloud.org>",
-  "package": "https://raw.github.com/documentcloud/backbone/master/package.json",
+  "package": "https://raw.github.com/jashkenas/backbone/master/package.json",
   "spm": {
     "alias": {
       "$": "$",

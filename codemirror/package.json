@@ -1,0 +1,31 @@
+{
+    "family": "gallery",
+    "name": "codemirror",
+    "version": "3.1.0",
+    "title": "CodeMirror",
+    "description": "CodeMirror is a versatile text editor implemented in JavaScript for the browser. It is specialized for editing code, and comes with a number of language modes and addons that implement more advanced editing functionality.",
+    "docs": "http://codemirror.net/doc/manual.html",
+    "homepage": "hhttp://codemirror.net/",
+    "demo": "http://codemirror.net/index.html",
+    "author": {
+        "name" : "http://codemirror.net/index.html",
+        "url" : "http://codemirror.net/index.html"
+    },
+    "keywords": [
+        "edit code"
+    ],
+    "licenses": "https://github.com/marijnh/CodeMirror/blob/master/LICENSE",
+    "dependencies": {
+        "jquery": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/marijnh/CodeMirror.git"
+    },
+    "spm": {
+        "output": [
+            "codemirror.js",
+            "codemirror.css"
+        ]
+    }
+}

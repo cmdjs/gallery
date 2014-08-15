@@ -31,7 +31,7 @@
   <body>
     <div id="mocha">Modules in Gallery</div>
     <script>
-      seajs.use('gallery/expect/1.0.0/expect', function(expect) {
+      (function() {
         mocha.setup('bdd');
 
         var modules = [
@@ -58,7 +58,7 @@
             mocha.run()
           }
         })
-      });
+      })();
     </script>
   </body>
 </html>

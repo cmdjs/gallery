@@ -1,6 +1,6 @@
-define("gallery/spin/1.3.3/spin-debug", [], function(require, exports, module) {
+define("gallery/spin/2.0.0/spin-debug", [], function(require, exports, module) {
     /**
- * Copyright (c) 2011-2013 Felix Gnass
+ * Copyright (c) 2011-2014 Felix Gnass
  * Licensed under the MIT license
  */
     (function(root, factory) {
@@ -125,15 +125,14 @@ define("gallery/spin/1.3.3/spin-debug", [], function(require, exports, module) {
             // Use a high z-index by default
             className: "spinner",
             // CSS class to assign to the element
-            top: "auto",
+            top: "50%",
             // center vertically
-            left: "auto",
+            left: "50%",
             // center horizontally
-            position: "relative"
+            position: "absolute"
         };
         /** The constructor */
         function Spinner(o) {
-            if (typeof this == "undefined") return new Spinner(o);
             this.opts = merge(o || {}, Spinner.defaults, defaults);
         }
         // Global defaults that override the built-ins:
@@ -152,15 +151,12 @@ define("gallery/spin/1.3.3/spin-debug", [], function(require, exports, module) {
                     position: o.position,
                     width: 0,
                     zIndex: o.zIndex
-                }), mid = o.radius + o.length + o.width, ep, tp;
-                // target position
+                }), mid = o.radius + o.length + o.width;
                 if (target) {
                     target.insertBefore(el, target.firstChild || null);
-                    tp = pos(target);
-                    ep = pos(el);
                     css(el, {
-                        left: (o.left == "auto" ? tp.x - ep.x + (target.offsetWidth >> 1) : parseInt(o.left, 10) + mid) + "px",
-                        top: (o.top == "auto" ? tp.y - ep.y + (target.offsetHeight >> 1) : parseInt(o.top, 10) + mid) + "px"
+                        left: o.left,
+                        top: o.top
                     });
                 }
                 el.setAttribute("role", "progressbar");
