@@ -1,0 +1,36 @@
+{
+    "family": "gallery",
+    "name": "mergely",
+    "version": "2.5.0",
+    "title": "Mergely",
+    "description": "Mergely is a powerful online web application for viewing and merging changes between documents online.  It is a pure-Javascript library that can be used to enhance your online CMS system.  Mergely is open source and also available for commerical use.",
+    "docs": "http://www.mergely.com/doc",
+    "homepage": "http://www.mergely.com/",
+    "demo": "http://www.mergely.com/",
+    "author": {
+        "name" : "http://www.mergely.com/",
+        "url" : "http://www.mergely.com/"
+    },
+    "keywords": [
+        "edit code"
+    ],
+    "licenses": "https://github.com/wickedest/Mergely/blob/master/LICENSE.html",
+    "dependencies": {
+        "jquery": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/marijnh/CodeMirror.git"
+    },
+    "spm": {
+        "alias": {
+          "$": "$",
+          "codemirrorjs": "gallery/codemirror/3.1.0/codemirror.js",
+          "codemirrorcss": "gallery/codemirror/3.1.0/codemirror.css"
+        },
+        "output": [
+            "mergely.js",
+            "mergely.css"
+        ]
+    }
+}
